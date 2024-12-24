@@ -7,22 +7,18 @@ import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
         setIsMobile(true);
         setIsTablet(false);
-        setIsDesktop(false);
       } else if (window.innerWidth >= 640 && window.innerWidth < 1024) {
         setIsMobile(false);
         setIsTablet(true);
-        setIsDesktop(false);
       } else {
         setIsMobile(false);
         setIsTablet(false);
-        setIsDesktop(true);
       }
     };
 
@@ -108,7 +104,8 @@ export default function Home() {
             </div>
             <h2 className="text-2xl font-bold">Our Team</h2>
             <p className="text-gray-400 mt-2">
-              Meet the passionate individuals driving GronIT's mission forward.
+              Meet the passionate individuals driving GronIT&apos;s mission
+              forward.
             </p>
           </div>
 

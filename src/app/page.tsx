@@ -2,10 +2,12 @@
 
 import { Footer } from "@/components/Footer";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { BsLayoutTextWindowReverse } from "react-icons/bs";
 import { FaCode, FaUsers } from "react-icons/fa";
 import { MdOutlineEventAvailable } from "react-icons/md";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
@@ -51,74 +53,96 @@ export default function Home() {
         {/* Modules */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
           {/* Home Module */}
-          <div
+          <motion.div
             className={`module relative bg-black ${
               isMobile ? "col-span-1" : isTablet ? "col-span-2" : "col-span-2"
             }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
             <div className="content">
-              <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
-                <FaCode size={40} />
-              </div>
-              <h2 className="text-2xl font-bold text-center">What We Do</h2>
-              <p className="text-gray-400 mt-2 text-center">
-                Empowering green computing through innovation and sustainable
-                practices.
-              </p>
+              <Link href="/about">
+                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                  <FaCode size={40} />
+                </div>
+                <h2 className="text-2xl font-bold text-center">What We Do</h2>
+                <p className="text-gray-400 mt-2 text-center">
+                  Empowering green computing through innovation and sustainable
+                  practices.
+                </p>
+              </Link>
             </div>
-          </div>
+          </motion.div>
 
           {/* Team Module */}
-          <div
+          <motion.div
             className={`module relative bg-black border rounded-xl border-gradient-to-r from-green-400 to-blue-500 p-6 hover:shadow-green-400/50 transition-all ${
               isMobile ? "col-span-1" : "col-span-1"
             }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="content">
-              <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
-                <FaUsers size={40} />
-              </div>
-              <h2 className="text-2xl font-bold">Our Team</h2>
-              <p className="text-gray-400 mt-2">
-                Meet the passionate individuals driving GronIT&apos;s mission
-                forward.
-              </p>
+              <Link href="/team" passHref>
+                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                  <FaUsers size={40} />
+                </div>
+                <h2 className="text-2xl font-bold">Our Team</h2>
+                <p className="text-gray-400 mt-2">
+                  Meet the passionate individuals driving GronIT&apos;s mission
+                  forward.
+                </p>
+              </Link>
             </div>
-          </div>
+          </motion.div>
 
           {/* Event Module */}
-          <div
+
+          <motion.div
             className={`module relative bg-black border rounded-xl border-gradient-to-r from-green-400 to-blue-500 p-6 hover:shadow-green-400/50 transition-all ${
               isMobile ? "col-span-1" : "col-span-1"
             }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
             <div className="content">
-              <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
-                <MdOutlineEventAvailable size={50} />
-              </div>
-              <h2 className="text-2xl font-bold">Events</h2>
-              <p className="text-gray-400 mt-2">
-                Stay updated on our latest workshops, seminars, and conferences.
-              </p>
+              <Link href="/events">
+                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                  <MdOutlineEventAvailable size={50} />
+                </div>
+                <h2 className="text-2xl font-bold">Events</h2>
+                <p className="text-gray-400 mt-2">
+                  Stay updated on our latest workshops, seminars, and
+                  conferences.
+                </p>
+              </Link>
             </div>
-          </div>
+          </motion.div>
 
           {/* Blogs Module */}
-          <div
+          <motion.div
             className={`module relative bg-black border rounded-xl border-gradient-to-r from-green-400 to-blue-500 p-6 hover:shadow-green-400/50 transition-all ${
               isMobile ? "col-span-1" : "row-start-2 row-span-2 col-start-2"
             }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
             <div className="content">
-              <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
-                <BsLayoutTextWindowReverse size={40} />
-              </div>
-              <h2 className="text-2xl font-bold text-center">Blogs</h2>
-              <p className="text-gray-400 mt-2 text-center">
-                Explore insights and stories on sustainable computing.
-              </p>
+              <Link href="/blogs">
+                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                  <BsLayoutTextWindowReverse size={40} />
+                </div>
+                <h2 className="text-2xl font-bold text-center">Blogs</h2>
+                <p className="text-gray-400 mt-2 text-center">
+                  Explore insights and stories on sustainable computing.
+                </p>
+              </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </main>
 

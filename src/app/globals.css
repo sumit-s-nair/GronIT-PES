@@ -32,20 +32,27 @@ body {
 /* Module Styling */
 .module {
   position: relative;
-  padding: 1.5rem;
-  border: 2px solid;
-  border-image: linear-gradient(to right, #38a169, #3182ce); /* Gradient border */
+  padding: 1.5px;
+  background: linear-gradient(to right, #38a169, #3182ce); /* Gradient border */
+  border: #0a0a0a solid 1px; 
   border-radius: 1rem;
-  border-image-slice: 1;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.module .content {
+  position: relative;
+  padding: 1.5rem;
+  background: black;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .module:hover {
   box-shadow: 0px 0px 60px rgba(56, 161, 105, 0.5); /* Green shadow */
-  transform: translateY(-5px); /* Slight lift effect on hover */
+  transform: translateY(-5px);
+  transition: all 0.4s;
 }
 
-/* Module Icon (SVG) */
+/* Module Icon */
 .module .icon {
   position: absolute;
   top: -2rem;
@@ -54,12 +61,6 @@ body {
   background: linear-gradient(to right, #38a169, #3182ce);
   padding: 1rem;
   border-radius: 50%;
-}
-
-.module .icon svg {
-  color: white;
-  width: 3rem;
-  height: 3rem;
 }
 
 /* Module Title */
@@ -73,7 +74,7 @@ body {
 
 /* Module Description */
 .module p {
-  color: #a0aec0; /* Gray text */
+  color: #a0aec0;
   text-align: center;
   margin-top: 0.5rem;
 }

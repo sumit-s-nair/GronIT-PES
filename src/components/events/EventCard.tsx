@@ -8,6 +8,7 @@ interface Event {
   date: string;
   name: string;
   description: string;
+  registrationLink: string;
 }
 
 export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
@@ -31,15 +32,14 @@ export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
           <p className="text-gray-300 text-center mt-4">{event.description}</p>
           <div className="flex justify-center gap-16 mt-6">
             <Link
-              href="#"
-              target="_blank"
+              href={`/events/${event.id}`}
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"
+              className="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"
             >
               Details
             </Link>
             <Link
-              href="#"
+              href={event.registrationLink}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 border-2 border-green-500 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"

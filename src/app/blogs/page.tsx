@@ -1,41 +1,41 @@
 "use client";
 
 import React from "react";
-import { MdOutlineEventAvailable } from "react-icons/md";
+import { MdOutlineArticle } from "react-icons/md";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { EventCard } from "@/components/events/EventCard";
+import { BlogCard } from "@/components/blogs/BlogCard";
 
-// Event data
-const events = [
+// Blog data
+const blogs = [
   {
     id: 1,
     image: "https://via.placeholder.com/150",
-    date: "2023-10-01",
-    name: "Event 1",
-    description: "Description for Event 1",
-    registrationLink: "#",
+    title: "Blog Post 1",
+    author: "Author A",
+    date: "2023-12-01",
+    description: "An introduction to the latest trends in web development.",
   },
   {
     id: 2,
     image: "https://via.placeholder.com/150",
-    date: "2023-10-15",
-    name: "Event 2",
-    description: "Description for Event 2",
-    registrationLink: "#",
+    title: "Blog Post 2",
+    author: "Author B",
+    date: "2023-12-10",
+    description: "Exploring sustainability through tech innovation.",
   },
   {
     id: 3,
     image: "https://via.placeholder.com/150",
-    date: "2023-11-01",
-    name: "Event 3",
-    description: "Description for Event 3",
-    registrationLink: "#",
+    title: "Blog Post 3",
+    author: "Author C",
+    date: "2023-12-20",
+    description: "How to master design principles for modern UI/UX.",
   },
 ];
 
-const EventsPage: React.FC = () => {
+const BlogsPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-sans">
       {/* Header */}
@@ -49,16 +49,16 @@ const EventsPage: React.FC = () => {
         transition={{ duration: 1 }}
       >
         <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
-          <MdOutlineEventAvailable size={50} />
+          <MdOutlineArticle size={50} />
         </div>
-        <h1 className="text-4xl mt-4 text-white font-bold uppercase">Events</h1>
+        <h1 className="text-4xl mt-4 text-white font-bold uppercase">Blogs</h1>
         <p className="text-gray-400 text-lg mt-2 text-center max-w-3xl">
-          Stay updated on our latest workshops, seminars, and conferences
-          designed to foster innovation and sustainability.
+          Discover insights, trends, and stories in our curated collection of
+          blog posts.
         </p>
       </motion.div>
 
-      {/* Event Cards */}
+      {/* Blog Cards */}
       <motion.main
         className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%]"
         initial={{ opacity: 0 }}
@@ -66,10 +66,10 @@ const EventsPage: React.FC = () => {
         transition={{ duration: 1, delay: 0.2 }}
       >
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {events.map((event, index) => (
+          {blogs.map((blog, index) => (
             <motion.div
-              key={event.id}
-              className="event-card"
+              key={blog.id}
+              className="blog-card"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{
@@ -77,7 +77,7 @@ const EventsPage: React.FC = () => {
                 delay: index * 0.3,
               }}
             >
-              <EventCard event={event} />
+              <BlogCard blog={blog} />
             </motion.div>
           ))}
         </div>
@@ -89,4 +89,4 @@ const EventsPage: React.FC = () => {
   );
 };
 
-export default EventsPage;
+export default BlogsPage;

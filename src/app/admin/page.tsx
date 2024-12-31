@@ -3,19 +3,24 @@
 import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { signOut, User } from "firebase/auth";
+import { User } from "firebase/auth";
 import Header from "@/components/Header";
-import { FaPlus, FaSignOutAlt, FaTrashAlt } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { UserRecord } from "firebase-admin/auth";
 import { Footer } from "@/components/Footer";
-import { Avatar } from "@/components/Avatar";
 import { Modal } from "@/components/Modal";
+import { Blog } from "@/models/Blog";
+import { Event } from "@/models/Event";
+import { AdminList, BlogList, EventList } from "@/components/Admin";
+import { handleSignOut } from "@/lib/Admin";
 
 const AdminPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [admins, setAdmins] = useState<UserRecord[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
 
   const [newUserEmail, setNewUserEmail] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,6 +31,10 @@ const AdminPage: React.FC = () => {
   const [deleteTargetUserId, setDeleteTargetUserId] = useState<string | null>(
     null
   );
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    type: string;
+  } | null>(null);
 
   const router = useRouter();
 
@@ -65,13 +74,36 @@ const AdminPage: React.FC = () => {
     }
   };
 
+  const fetchBlogsAndEvents = async () => {
+    setLoading(true);
+    try {
+      const idToken = await user?.getIdToken();
+      const [blogsResponse, eventsResponse] = await Promise.all([
+        axios.get("/api/blogs", {
+          headers: { Authorization: `Bearer ${idToken}` },
+        }),
+        axios.get("/api/events", {
+          headers: { Authorization: `Bearer ${idToken}` },
+        }),
+      ]);
+
+      if (blogsResponse.data) setBlogs(blogsResponse.data);
+      if (eventsResponse.data) setEvents(eventsResponse.data);
+    } catch (error) {
+      console.error("Error fetching blogs/events:", error);
+      alert("Failed to fetch blogs and events.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch list of admins
   useEffect(() => {
     if (user) {
       fetchAdmins();
+      fetchBlogsAndEvents();
     }
   }, [user]);
-  
 
   const handleAddUser = async () => {
     if (!newUserEmail) return;
@@ -105,7 +137,8 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  const handleDeleteUser = async (userId: string, userEmail: string) => {
+  const handleDeleteUser = async (userId: string) => {
+    const userEmail = admins.find((admin) => admin.uid === userId)?.email || "";
     if (userEmail === user?.email) {
       setShowSelfDeleteModal(true);
       return;
@@ -142,12 +175,43 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  const handleSignOut = async () => {
+  const handleDeleteItem = (id: string, type: "blog" | "event") => {
+    setDeleteTarget({ id, type });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteItem = async () => {
+    if (!deleteTarget) return;
+    console.log(deleteTarget.id);
+
+    setLoading(true);
     try {
-      await signOut(auth);
-      router.push("/auth");
+      const idToken = await user?.getIdToken();
+      const endpoint =
+        deleteTarget.type === "blog" ? "/api/blogs" : "/api/events";
+      const response = await axios.delete(endpoint, {
+        headers: { Authorization: `Bearer ${idToken}` },
+        data: { id: deleteTarget.id },
+      });
+
+      if (response.status === 200) {
+        if (deleteTarget.type === "blog") {
+          setBlogs((prev) =>
+            prev.filter((blog) => blog.id !== deleteTarget.id)
+          );
+        } else {
+          setEvents((prev) =>
+            prev.filter((event) => event.id !== deleteTarget.id)
+          );
+        }
+      }
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error(`Error deleting ${deleteTarget.type}:`, error);
+      alert(`Failed to delete ${deleteTarget.type}.`);
+    } finally {
+      setDeleteTarget(null);
+      setShowDeleteModal(false);
+      setLoading(false);
     }
   };
 
@@ -194,45 +258,17 @@ const AdminPage: React.FC = () => {
         transition={{ duration: 1, delay: 0.2 }}
       >
         {/* Admin List Section */}
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-semibold">Admins</h2>
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-green-500 text-white p-2 rounded-full hover:bg-green-700"
-          >
-            <FaPlus />
-          </button>
-        </div>
+        <AdminList
+          admins={admins}
+          onDelete={handleDeleteUser}
+          onAdd={() => setShowModal(true)}
+        />
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="flex flex-wrap gap-4">
-            {admins.map((admin) => (
-              <div
-                key={admin.uid}
-                className="flex flex-col items-center bg-zinc-800 p-4 rounded-lg shadow-md w-full sm:w-[200px]"
-              >
-                <Avatar
-                  imageUrl={admin.photoURL}
-                  name={admin.displayName || admin.email}
-                />
-                <p className="text-lg font-semibold mt-2">
-                  {admin.displayName || "No Name"}
-                </p>
-                <p className="text-sm text-center mt-2">{admin.email}</p>
-                <button
-                  onClick={() =>
-                    admin.email && handleDeleteUser(admin.uid, admin.email)
-                  }
-                  className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-700"
-                >
-                  <FaTrashAlt />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Blogs Section */}
+        <BlogList blogs={blogs} onDelete={handleDeleteItem} />
+
+        {/* Events Section */}
+        <EventList events={events} onDelete={handleDeleteItem} />
       </motion.main>
 
       <Footer />
@@ -284,7 +320,32 @@ const AdminPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Modal for self-delete attempt */}
+      {showDeleteModal && (
+        <Modal onClose={() => setShowDeleteModal(false)} isOpen={true}>
+          <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
+          <p className="text-gray-400 mb-6">
+            Are you sure you want to delete this {deleteTarget?.type}? This
+            action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-4">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDeleteItem}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+              disabled={loading}
+            >
+              {loading ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        </Modal>
+      )}
+
       {showSelfDeleteModal && (
         <Modal onClose={() => setShowSelfDeleteModal(false)} isOpen={true}>
           <h2 className="text-xl font-semibold mb-4">Cannot Delete Yourself</h2>

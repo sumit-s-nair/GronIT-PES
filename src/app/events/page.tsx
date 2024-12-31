@@ -1,41 +1,42 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { EventCard } from "@/components/events/EventCard";
-
-// Event data
-const events = [
-  {
-    id: 1,
-    image: "https://via.placeholder.com/150",
-    date: "2023-10-01",
-    name: "Event 1",
-    description: "Description for Event 1",
-    registrationLink: "#",
-  },
-  {
-    id: 2,
-    image: "https://via.placeholder.com/150",
-    date: "2023-10-15",
-    name: "Event 2",
-    description: "Description for Event 2",
-    registrationLink: "#",
-  },
-  {
-    id: 3,
-    image: "https://via.placeholder.com/150",
-    date: "2023-11-01",
-    name: "Event 3",
-    description: "Description for Event 3",
-    registrationLink: "#",
-  },
-];
+import axios from "axios";
+interface Event {
+  _id: string;
+  name: string;
+  content: string;
+  author: string;
+  description: string;
+  registrationLink: string;
+  image: Buffer;
+  imageType: string;
+  date: Date;
+}
 
 const EventsPage: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+
+  const fetchEvents = async () => {
+    try {
+      const eventsResponse = await axios.get("/api/events");
+
+      if (eventsResponse.data) setEvents(eventsResponse.data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      alert("Failed to fetch events.");
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-sans">
       {/* Header */}
@@ -68,7 +69,7 @@ const EventsPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {events.map((event, index) => (
             <motion.div
-              key={event.id}
+              key={event._id}
               className="event-card"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

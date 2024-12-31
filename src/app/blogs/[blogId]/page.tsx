@@ -1,49 +1,51 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-
-// Sample data for demonstration (replace with real data fetching)
-const blogs = [
-  {
-    id: "1",
-    image: "https://via.placeholder.com/800x400",
-    title: "Blog Post 1",
-    author: "Author A",
-    date: "2023-12-01",
-    description: "An introduction to the latest trends in web development.",
-    content: "This is the detailed content of Blog Post 1...",
-  },
-  {
-    id: "2",
-    image: "https://via.placeholder.com/800x400",
-    title: "Blog Post 2",
-    author: "Author B",
-    date: "2023-12-10",
-    description: "Exploring sustainability through tech innovation.",
-    content: "This is the detailed content of Blog Post 2...",
-  },
-  {
-    id: "3",
-    image: "https://via.placeholder.com/800x400",
-    title: "Blog Post 3",
-    author: "Author C",
-    date: "2023-12-20",
-    description: "How to master design principles for modern UI/UX.",
-    content: "This is the detailed content of Blog Post 3...",
-  },
-];
+import { Blog } from "@/models/Blog";
 
 const BlogDetailsPage: React.FC = () => {
   const { blogId } = useParams();
+  const [blog, setBlog] = useState<Blog | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
-  // Find the blog based on the blogId
-  const blog = blogs.find((b) => b.id === blogId);
+  useEffect(() => {
+    if (blogId) {
+      const fetchBlog = async () => {
+        try {
+          const response = await fetch(`/api/blogs/getBlog?blogId=${blogId}`, {
+            method: "GET",
+          });
+          if (!response.ok) {
+            throw new Error("Blog not found");
+          }
+          const data = await response.json();
+          setBlog(data);
+        } catch {
+          setError("Failed to fetch blog details");
+        } finally {
+          setLoading(false);
+        }
+      };
 
-  // Handle blog not found
-  if (!blog) {
+      fetchBlog();
+    }
+  }, [blogId]);
+
+  // Handle loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-white bg-black">
+        <h1 className="text-3xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
+
+  // Handle error or blog not found
+  if (error || !blog) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-black">
         <h1 className="text-3xl font-bold">Blog Not Found</h1>
@@ -57,21 +59,25 @@ const BlogDetailsPage: React.FC = () => {
     );
   }
 
+  const imageDataURL = blog.image
+    ? `data:${blog.imageType};base64,${Buffer.from(blog.image).toString(
+        "base64"
+      )}`
+    : "/assets/logo_black.png";
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-sans">
       {/* Blog Header */}
       <div className="relative w-full h-64 sm:h-96">
         <Image
-          src={blog.image}
+          src={imageDataURL}
           alt={blog.title}
           fill
           className="object-cover"
         />
         <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6">
           <h1 className="text-4xl font-bold">{blog.title}</h1>
-          <p className="text-gray-400 mt-2">
-            By {blog.author} on {blog.date}
-          </p>
+          <p className="text-gray-400 mt-2">By {blog.author}</p>
         </div>
       </div>
 

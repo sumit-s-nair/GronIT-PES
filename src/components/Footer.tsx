@@ -27,7 +27,7 @@ export const Footer = () => {
           <FaLinkedin size={28} />
         </Link>
         <Link
-          href="mailto:"
+          href="mailto:gronit@pes.edu"
           target="_blank"
           rel="noopener noreferrer"
           className="text-green-400 hover:text-white duration-300"

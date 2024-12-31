@@ -1,53 +1,65 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-// Sample data for demonstration (replace with real data fetching)
-const events = [
-  {
-    id: "1",
-    image: "https://via.placeholder.com/800x400",
-    name: "Event 1",
-    date: "2023-12-01",
-    location: "Main Auditorium",
-    description:
-      "Join us for an insightful workshop on web development trends.",
-    details: "This workshop will cover advanced topics in web development...",
-    registerLink: "https://example.com/register/event-1",
-  },
-  {
-    id: "2",
-    image: "https://via.placeholder.com/800x400",
-    name: "Event 2",
-    date: "2023-12-10",
-    location: "Innovation Hub",
-    description: "Explore the intersection of sustainability and technology.",
-    details: "The event will feature key speakers from the tech industry...",
-    registerLink: "https://example.com/register/event-2",
-  },
-  {
-    id: "3",
-    image: "https://via.placeholder.com/800x400",
-    name: "Event 3",
-    date: "2023-12-20",
-    location: "Virtual (Zoom)",
-    description: "Master design principles for modern UI/UX.",
-    details: "This session will include hands-on exercises and expert talks...",
-    registerLink: "https://example.com/register/event-3",
-  },
-];
+interface Event {
+  _id: string;
+  name: string;
+  content: string;
+  author: string;
+  description: string;
+  registrationLink: string;
+  image: Buffer;
+  imageType: string;
+  date: Date;
+}
 
 const EventDetailsPage: React.FC = () => {
-  const { eventId } = useParams(); // Get the eventId from the URL
+  const { eventId } = useParams();
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
-  // Find the event based on the eventId
-  const event = events.find((e) => e.id === eventId);
+  useEffect(() => {
+    if (eventId) {
+      const fetchEvent = async () => {
+        try {
+          const response = await fetch(
+            `/api/events/getEvent?eventId=${eventId}`,
+            {
+              method: "GET",
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Event not found");
+          }
+          const data = await response.json();
+          setEvent(data);
+        } catch {
+          setError("Failed to fetch event details");
+        } finally {
+          setLoading(false);
+        }
+      };
 
-  // Handle event not found
-  if (!event) {
+      fetchEvent();
+    }
+  }, [eventId]);
+
+  // Handle loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-white bg-black">
+        <h1 className="text-3xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
+
+  // Handle error or event not found
+  if (error || !event) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-black">
         <h1 className="text-3xl font-bold">Event Not Found</h1>
@@ -61,20 +73,31 @@ const EventDetailsPage: React.FC = () => {
     );
   }
 
+  const imageDataURL = event.image
+    ? `data:${event.imageType};base64,${Buffer.from(event.image).toString(
+        "base64"
+      )}`
+    : "/assets/logo_black.png";
+
+  const formattedDate = new Date(event.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-sans">
       {/* Event Header */}
       <div className="relative w-full h-64 sm:h-96">
         <Image
-          src={event.image}
+          src={imageDataURL}
           alt={event.name}
           fill
           className="object-cover"
         />
         <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6">
           <h1 className="text-4xl font-bold">{event.name}</h1>
-          <p className="text-gray-400 mt-2">{event.date}</p>
-          <p className="text-gray-400">{event.location}</p>
+          <p className="text-gray-400 mt-2">{formattedDate}</p>
         </div>
       </div>
 
@@ -82,26 +105,21 @@ const EventDetailsPage: React.FC = () => {
       <div className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%]">
         <p className="text-gray-400 text-lg">{event.description}</p>
         <div className="mt-6 text-gray-300 leading-relaxed">
-          {event.details}
-        </div>
-        {/* Register Button */}
-        <div className="mt-8">
-          <a
-            href={event.registerLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Register Now
-          </a>
+          {event.content}
         </div>
       </div>
 
       {/* Back to Events */}
-      <div className="flex justify-center p-6">
+      <div className="flex flex-col justify-center p-6 mx-auto gap-8">
+        <Link
+          href={event.registrationLink}
+          className="px-6 py-3 bg-blue-500 text-center text-white rounded-lg"
+        >
+          Register Now
+        </Link>
         <Link
           href="/events"
-          className="px-6 py-3 bg-green-500 text-white rounded-lg"
+          className="px-6 py-3 bg-green-500 text-center text-white rounded-lg"
         >
           Back to Events
         </Link>

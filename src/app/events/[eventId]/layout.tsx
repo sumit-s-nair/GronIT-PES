@@ -1,50 +1,47 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 
-// Sample event data for demonstration (replace with API call)
-const events = [
-  {
-    id: "1",
-    image: "https://via.placeholder.com/800x400",
-    name: "Event 1",
-    date: "2023-12-01",
-    location: "Main Auditorium",
-    description: "Join us for an insightful workshop on web development trends.",
-    details: "This workshop will cover advanced topics in web development...",
-  },
-  {
-    id: "2",
-    image: "https://via.placeholder.com/800x400",
-    name: "Event 2",
-    date: "2023-12-10",
-    location: "Innovation Hub",
-    description: "Explore the intersection of sustainability and technology.",
-    details: "The event will feature key speakers from the tech industry...",
-  },
-  {
-    id: "3",
-    image: "https://via.placeholder.com/800x400",
-    name: "Event 3",
-    date: "2023-12-20",
-    location: "Virtual (Zoom)",
-    description: "Master design principles for modern UI/UX.",
-    details: "This session will include hands-on exercises and expert talks...",
-  },
-];
-
-type Props = {
+type LayoutProps = {
+  children: React.ReactNode;
   params: Promise<{ eventId: string }>;
-}
+};
+
+// Fetch event details based on eventId
+const fetchEvent = async (eventId: string) => {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const url = `${apiUrl}/api/events/getEvent?eventId=${eventId}`;
+
+    const response = await fetch(url, { method: "GET" });
+
+    if (!response.ok) {
+      throw new Error("Event not found");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch event details:", error);
+    return null;
+  }
+};
 
 // Dynamic metadata based on eventId
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const eventId  = (await params).eventId;
+export async function generateMetadata(
+  { params }: { params: Promise<{ eventId: string }> }
+): Promise<Metadata> {
+  const { eventId } = await params;
 
-  // Find the event based on the eventId
-  const event = events.find((e) => e.id === eventId);
+  const event = await fetchEvent(eventId); 
 
   // If the event is found, return dynamic metadata
   if (event) {
+    const imageUrl = event.image
+      ? `data:${event.imageType || "image/jpeg"};base64,${Buffer.from(
+          event.image
+        ).toString("base64")}`
+      : "/assets/logo_black.png";
+
     return {
       title: event.name,
       description: event.description,
@@ -53,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: event.description,
         images: [
           {
-            url: event.image,
+            url: imageUrl,
             width: 800,
             height: 400,
             alt: event.name,
@@ -65,20 +62,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // Fallback to default metadata if no event is found
   return {
-    title: "GronIT Events",
-    description: "Green computing club of PES",
+    title: "Event Details",
+    description: "Discover upcoming events and register for them",
   };
 }
 
-export default async function RootLayout({
+export default async function EventDetailsLayout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ eventId: string }>;
-}) {
+}: LayoutProps) {
   const { eventId } = await params;
-  console.log("Dynamic Route Params:", eventId);
+
+  await fetchEvent(eventId);
 
   return (
     <html lang="en">

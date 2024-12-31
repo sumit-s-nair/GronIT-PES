@@ -1,50 +1,47 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 
-// Sample blog data
-const blogs = [
-  {
-    id: "1",
-    image: "https://via.placeholder.com/800x400",
-    title: "Blog Post 1",
-    author: "Author A",
-    date: "2023-12-01",
-    description: "An introduction to the latest trends in web development.",
-    content: "This is the detailed content of Blog Post 1...",
-  },
-  {
-    id: "2",
-    image: "https://via.placeholder.com/800x400",
-    title: "Blog Post 2",
-    author: "Author B",
-    date: "2023-12-10",
-    description: "Exploring sustainability through tech innovation.",
-    content: "This is the detailed content of Blog Post 2...",
-  },
-  {
-    id: "3",
-    image: "https://via.placeholder.com/800x400",
-    title: "Blog Post 3",
-    author: "Author C",
-    date: "2023-12-20",
-    description: "How to master design principles for modern UI/UX.",
-    content: "This is the detailed content of Blog Post 3...",
-  },
-];
-
-type Props = {
+type LayoutProps = {
+  children: React.ReactNode;
   params: Promise<{ blogId: string }>;
-}
+};
+
+// Fetch blog details based on blogId
+const fetchBlog = async (blogId: string) => {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const url = `${apiUrl}/api/blogs/getBlog?blogId=${blogId}`;
+
+    const response = await fetch(url, { method: "GET" });
+
+    if (!response.ok) {
+      throw new Error("Blog not found");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch blog details:", error);
+    return null;
+  }
+};
 
 // Dynamic metadata based on blogId
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const blogId = (await params).blogId;
+export async function generateMetadata(
+  { params }: { params: Promise<{ blogId: string }> }
+): Promise<Metadata> {
+  const { blogId } = await params; 
 
-  // Find the blog based on the blogId
-  const blog = blogs.find((e) => e.id === blogId);
+  const blog = await fetchBlog(blogId);
 
   // If the blog is found, return dynamic metadata
   if (blog) {
+    const imageUrl = blog.image
+      ? `data:${blog.imageType || "image/jpeg"};base64,${Buffer.from(
+          blog.image
+        ).toString("base64")}`
+      : "/assets/logo_black.png";
+
     return {
       title: blog.title,
       description: blog.description,
@@ -53,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: blog.description,
         images: [
           {
-            url: blog.image,
+            url: imageUrl,
             width: 800,
             height: 400,
             alt: blog.title,
@@ -70,15 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ blogId: string }>;
-}) {
-  const { blogId } = await params
-  console.log("Dynamic Route Params:", blogId);
+export default async function RootLayout({ children, params }: LayoutProps) {
+  const { blogId } = await params; 
+
+  await fetchBlog(blogId);
 
   return (
     <html lang="en">

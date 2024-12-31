@@ -1,41 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineArticle } from "react-icons/md";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BlogCard } from "@/components/blogs/BlogCard";
-
-// Blog data
-const blogs = [
-  {
-    id: 1,
-    image: "https://via.placeholder.com/150",
-    title: "Blog Post 1",
-    author: "Author A",
-    date: "2023-12-01",
-    description: "An introduction to the latest trends in web development.",
-  },
-  {
-    id: 2,
-    image: "https://via.placeholder.com/150",
-    title: "Blog Post 2",
-    author: "Author B",
-    date: "2023-12-10",
-    description: "Exploring sustainability through tech innovation.",
-  },
-  {
-    id: 3,
-    image: "https://via.placeholder.com/150",
-    title: "Blog Post 3",
-    author: "Author C",
-    date: "2023-12-20",
-    description: "How to master design principles for modern UI/UX.",
-  },
-];
+import axios from "axios";
+import { Blog } from "@/models/Blog";
 
 const BlogsPage: React.FC = () => {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+
+  const fetchBlogs = async () => {
+    try {
+      const blogsResponse = await axios.get("/api/blogs");
+
+      if (blogsResponse.data) setBlogs(blogsResponse.data);
+    } catch (error) {
+      console.error("Error fetching blogs/events:", error);
+      alert("Failed to fetch blogs and events.");
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-sans">
       {/* Header */}
@@ -68,7 +59,7 @@ const BlogsPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {blogs.map((blog, index) => (
             <motion.div
-              key={blog.id}
+              key={blog._id}
               className="blog-card"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

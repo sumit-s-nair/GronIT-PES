@@ -83,8 +83,13 @@ const BlogDetailsPage: React.FC = () => {
 
       {/* Blog Content */}
       <div className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%]">
-        <p className="text-gray-400 text-lg">{blog.description}</p>
-        <div className="mt-6 text-gray-300 leading-relaxed">{blog.content}</div>
+      <div className="mt-6 text-gray-300 leading-relaxed">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: blog.content.replace(/\r\n/g, "<br/>"),
+            }}
+          />
+        </div>
       </div>
 
       {/* Back to Blogs */}

@@ -92,9 +92,12 @@ const EventDetailsPage: React.FC = () => {
 
       {/* Event Content */}
       <div className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%]">
-        <p className="text-gray-400 text-lg">{event.description}</p>
         <div className="mt-6 text-gray-300 leading-relaxed">
-          {event.content}
+          <div
+            dangerouslySetInnerHTML={{
+              __html: event.content.replace(/\r\n/g, "<br/>"),
+            }}
+          />
         </div>
       </div>
 

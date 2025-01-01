@@ -10,6 +10,11 @@ export const BlogCard: React.FC<{ blog: Blog }> = ({ blog }) => {
       )}`
     : "/assets/logo_black.png";
 
+  const truncatedDescription =
+    blog.description.length > 100
+      ? `${blog.description.slice(0, 100)}...`
+      : blog.description;
+
   return (
     <div className="module">
       <div className="rounded-gradient-bg max-w-[400px] sm:max-w-[460px] w-full content">
@@ -28,9 +33,7 @@ export const BlogCard: React.FC<{ blog: Blog }> = ({ blog }) => {
           <h2 className="text-2xl font-semibold text-center">{blog.title}</h2>
           <p className="text-gray-400 text-center mt-2">By {blog.author}</p>
           <p className="text-gray-300 text-center mt-4">
-            {blog.description.length > 100
-              ? `${blog.description.slice(0, 100)}...`
-              : blog.description}
+            {truncatedDescription}
           </p>
           <div className="flex justify-center gap-16 mt-6">
             <Link

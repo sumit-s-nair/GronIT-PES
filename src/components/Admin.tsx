@@ -188,6 +188,11 @@ export const BlogList: React.FC<BlogListProps> = ({ blogs, onDelete }) => {
               )}`
             : "/assets/logo_black.png";
 
+          const truncatedDescription =
+            blog.description.length > 50
+              ? `${blog.description.slice(0, 50)}...`
+              : blog.description;
+
           return (
             <div
               key={blog._id}
@@ -201,7 +206,7 @@ export const BlogList: React.FC<BlogListProps> = ({ blogs, onDelete }) => {
                 height={600}
               />
               <p className="text-lg font-semibold mt-2">{blog.title}</p>
-              <p className="text-sm text-center mt-2">{blog.description}</p>
+              <p className="text-sm text-center mt-2">{truncatedDescription}</p>
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => router.push("/admin/edit-blog/" + blog._id)}
@@ -248,6 +253,11 @@ export const EventList: React.FC<EventListProps> = ({ events, onDelete }) => {
               ).toString("base64")}`
             : "/assets/logo_black.png";
 
+          const truncatedDescription =
+            event.description.length > 50
+              ? `${event.description.slice(0, 50)}...`
+              : event.description;
+
           return (
             <div
               key={event._id}
@@ -261,7 +271,7 @@ export const EventList: React.FC<EventListProps> = ({ events, onDelete }) => {
                 height={600}
               />
               <p className="text-lg font-semibold mt-2">{event.title}</p>
-              <p className="text-sm text-center mt-2">{event.description}</p>
+              <p className="text-sm text-center mt-2">{truncatedDescription}</p>
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => router.push("/admin/edit-event/" + event._id)}

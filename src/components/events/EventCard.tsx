@@ -16,6 +16,11 @@ export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     day: "numeric",
   });
 
+  const truncatedDescription =
+    event.description.length > 100
+      ? `${event.description.slice(0, 100)}...`
+      : event.description;
+
   return (
     <div className="module">
       <div className="rounded-gradient-bg max-w-[400px] sm:max-w-[460px] w-full content">
@@ -33,7 +38,7 @@ export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
         <div className="p-6">
           <h2 className="text-2xl font-semibold text-center">{event.title}</h2>
           <p className="text-gray-400 text-center mt-2">{formattedDate}</p>
-          <p className="text-gray-300 text-center mt-4">{event.description}</p>
+          <p className="text-gray-300 text-center mt-4">{truncatedDescription}</p>
           <div className="flex justify-center gap-16 mt-6">
             <Link
               href={`/events/${event._id}`}

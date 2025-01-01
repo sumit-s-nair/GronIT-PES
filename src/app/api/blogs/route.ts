@@ -65,7 +65,6 @@ export async function POST(req: Request) {
     });
 
     await newBlog.save();
-    console.log("Blog created successfully:", newBlog);
 
     return NextResponse.json(
       { message: "Blog created successfully", blog: newBlog },

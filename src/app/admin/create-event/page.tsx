@@ -48,7 +48,7 @@ const CreateEventPage: React.FC = () => {
     }
 
     const formData = new FormData();
-    formData.append("name", title);
+    formData.append("title", title);
     formData.append("content", content);
     formData.append("author", author);
     formData.append("image", image);

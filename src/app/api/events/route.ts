@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
     const formData = await req.formData();
 
-    const name = formData.get("name")?.toString();
+    const title = formData.get("title")?.toString();
     const content = formData.get("content")?.toString();
     const author = decodedToken.name;
     const description = formData.get("description")?.toString();
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     const dateString = formData.get("date")?.toString();
 
     if (
-      !name ||
+      !title ||
       !content ||
       !author ||
       !description ||
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     const imageType = imageFile.type;
 
     const newEvent = new Event({
-      name,
+      title,
       content,
       author,
       description,

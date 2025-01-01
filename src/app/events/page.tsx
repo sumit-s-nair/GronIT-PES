@@ -7,17 +7,7 @@ import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { EventCard } from "@/components/events/EventCard";
 import axios from "axios";
-interface Event {
-  _id: string;
-  name: string;
-  content: string;
-  author: string;
-  description: string;
-  registrationLink: string;
-  image: Buffer;
-  imageType: string;
-  date: Date;
-}
+import { Event } from "@/models/Event";
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);

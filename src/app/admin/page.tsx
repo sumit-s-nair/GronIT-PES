@@ -21,24 +21,19 @@ const AdminPage: React.FC = () => {
   const [admins, setAdmins] = useState<UserRecord[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-
-  const [newUserEmail, setNewUserEmail] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [showSelfDeleteModal, setShowSelfDeleteModal] =
-    useState<boolean>(false);
-  const [deleteTargetUserId, setDeleteTargetUserId] = useState<string | null>(
-    null
-  );
-  const [deleteTarget, setDeleteTarget] = useState<{
-    id: string;
+  const [adminLoading, setAdminLoading] = useState<boolean>(false);
+  const [blogLoading, setBlogLoading] = useState<boolean>(false);
+  const [eventLoading, setEventLoading] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<{
     type: string;
+    title: string;
+    message: string;
+    action: () => Promise<void>;
   } | null>(null);
 
   const router = useRouter();
 
-  // Fetch logged-in user and manage session
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
@@ -52,7 +47,7 @@ const AdminPage: React.FC = () => {
   }, [router]);
 
   const fetchAdmins = async () => {
-    setLoading(true);
+    setAdminLoading(true);
     try {
       const idToken = await user?.getIdToken();
       const response = await axios.get("/api/admin/getAdmins", {
@@ -70,12 +65,13 @@ const AdminPage: React.FC = () => {
       console.error("Error fetching admins:", error);
       alert("Failed to fetch admins.");
     } finally {
-      setLoading(false);
+      setAdminLoading(false);
     }
   };
 
   const fetchBlogsAndEvents = async () => {
-    setLoading(true);
+    setBlogLoading(true);
+    setEventLoading(true);
     try {
       const idToken = await user?.getIdToken();
       const [blogsResponse, eventsResponse] = await Promise.all([
@@ -93,7 +89,8 @@ const AdminPage: React.FC = () => {
       console.error("Error fetching blogs/events:", error);
       alert("Failed to fetch blogs and events.");
     } finally {
-      setLoading(false);
+      setBlogLoading(false);
+      setEventLoading(false);
     }
   };
 
@@ -105,114 +102,80 @@ const AdminPage: React.FC = () => {
     }
   }, [user]);
 
-  const handleAddUser = async () => {
-    if (!newUserEmail) return;
-
-    setLoading(true);
-    try {
-      const idToken = await user?.getIdToken();
-
-      const response = await axios.post(
-        "/api/admin/addUser",
-        { email: newUserEmail },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        setShowModal(false);
-
-        setTimeout(() => {
-          fetchAdmins();
-        }, 300);
-      }
-    } catch (error) {
-      console.error("Error adding user:", error);
-      alert("Failed to add user.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDeleteUser = async (userId: string) => {
     const userEmail = admins.find((admin) => admin.uid === userId)?.email || "";
     if (userEmail === user?.email) {
-      setShowSelfDeleteModal(true);
+      setModalContent({
+        type: "self-delete",
+        title: "Cannot Delete Yourself",
+        message: "You cannot delete your own account.",
+        action: () => Promise.resolve(),
+      });
       return;
     }
 
-    setDeleteTargetUserId(userId); // Set the user ID to be deleted
-    setShowDeleteModal(true); // Show the confirmation modal
-  };
+    setModalContent({
+      type: "delete-user",
+      title: "Confirm Delete User",
+      message: `Are you sure you want to delete this user? This action cannot be undone.`,
+      action: async () => {
+        setLoading(true);
+        try {
+          const idToken = await user?.getIdToken();
+          const response = await axios.delete("/api/admin/deleteUser", {
+            data: { userId },
+            headers: { Authorization: `Bearer ${idToken}` },
+          });
 
-  const confirmDeleteUser = async () => {
-    if (!deleteTargetUserId) return;
-
-    setLoading(true);
-    try {
-      const idToken = await user?.getIdToken();
-
-      const response = await axios.delete("/api/admin/deleteUser", {
-        data: { userId: deleteTargetUserId },
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      if (response.status === 200) {
-        fetchAdmins();
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      alert("Failed to delete user.");
-    } finally {
-      setShowDeleteModal(false);
-      setDeleteTargetUserId(null);
-      setLoading(false);
-    }
+          if (response.status === 200) {
+            fetchAdmins();
+          }
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          alert("Failed to delete user.");
+        } finally {
+          setLoading(false);
+          setModalContent(null);
+        }
+      },
+    });
   };
 
   const handleDeleteItem = (id: string, type: "blog" | "event") => {
-    setDeleteTarget({ id, type });
-    setShowDeleteModal(true);
-  };
+    setModalContent({
+      type: "delete-item",
+      title: `Confirm Delete ${type}`,
+      message: `Are you sure you want to delete this ${type}? This action cannot be undone.`,
+      action: async () => {
+        setLoading(true);
+        try {
+          const idToken = await user?.getIdToken();
+          const endpoint = type === "blog" ? "/api/blogs" : "/api/events";
+          const response = await axios.delete(endpoint, {
+            headers: { Authorization: `Bearer ${idToken}` },
+            data: { id },
+          });
 
-  const confirmDeleteItem = async () => {
-    if (!deleteTarget) return;
-    console.log(deleteTarget.id);
+          if (response.status === 200) {
+            if (type === "blog") {
+              setBlogs((prev) => prev.filter((blog) => blog.id !== id));
+            } else {
+              setEvents((prev) => prev.filter((event) => event.id !== id));
+            }
 
-    setLoading(true);
-    try {
-      const idToken = await user?.getIdToken();
-      const endpoint =
-        deleteTarget.type === "blog" ? "/api/blogs" : "/api/events";
-      const response = await axios.delete(endpoint, {
-        headers: { Authorization: `Bearer ${idToken}` },
-        data: { id: deleteTarget.id },
-      });
-
-      if (response.status === 200) {
-        if (deleteTarget.type === "blog") {
-          setBlogs((prev) =>
-            prev.filter((blog) => blog.id !== deleteTarget.id)
-          );
-        } else {
-          setEvents((prev) =>
-            prev.filter((event) => event.id !== deleteTarget.id)
-          );
+            setTimeout(() => {
+              fetchBlogsAndEvents();
+            }, 300);
+          }
+        } catch (error) {
+          console.error(`Error deleting ${type}:`, error);
+          alert(`Failed to delete ${type}.`);
+        } finally {
+          setModalContent(null);
+          setLoading(false);
         }
-      }
-    } catch (error) {
-      console.error(`Error deleting ${deleteTarget.type}:`, error);
-      alert(`Failed to delete ${deleteTarget.type}.`);
-    } finally {
-      setDeleteTarget(null);
-      setShowDeleteModal(false);
-      setLoading(false);
-    }
+      },
+    });
   };
 
   return (
@@ -240,7 +203,7 @@ const AdminPage: React.FC = () => {
           Admin Dashboard
         </h1>
         <p className="text-gray-300 text-lg mt-2 text-center max-w-3xl">
-          Manage admin users blogs, events and more.
+          Manage admin users blogs, events, and more.
         </p>
 
         <button
@@ -258,107 +221,47 @@ const AdminPage: React.FC = () => {
         transition={{ duration: 1, delay: 0.2 }}
       >
         {/* Admin List Section */}
-        <AdminList
-          admins={admins}
-          onDelete={handleDeleteUser}
-          onAdd={() => setShowModal(true)}
-        />
+        {adminLoading ? (
+          <p className="text-center text-gray-500">Loading Admins...</p>
+        ) : (
+          <AdminList admins={admins} onDelete={handleDeleteUser} />
+        )}
 
         {/* Blogs Section */}
-        <BlogList blogs={blogs} onDelete={handleDeleteItem} />
+        {blogLoading ? (
+          <p className="text-center text-gray-500">Loading Blogs...</p>
+        ) : (
+          <BlogList blogs={blogs} onDelete={handleDeleteItem} />
+        )}
 
         {/* Events Section */}
-        <EventList events={events} onDelete={handleDeleteItem} />
+        {eventLoading ? (
+          <p className="text-center text-gray-500">Loading Events...</p>
+        ) : (
+          <EventList events={events} onDelete={handleDeleteItem} />
+        )}
       </motion.main>
 
       <Footer />
 
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)} isOpen={true}>
-          <h2 className="text-xl font-semibold mb-4">Add New User</h2>
-          <input
-            type="email"
-            value={newUserEmail}
-            onChange={(e) => setNewUserEmail(e.target.value)}
-            placeholder="Enter user's email"
-            className="w-full px-4 py-2 border border-gray-300 rounded mb-4 bg-zinc-800 text-white"
-            disabled={loading}
-          />
-          <button
-            onClick={handleAddUser}
-            className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
-            disabled={loading}
-          >
-            {loading ? "Adding..." : "Add User"}
-          </button>
-        </Modal>
-      )}
-
-      {showDeleteModal && (
-        <Modal onClose={() => setShowDeleteModal(false)} isOpen={true}>
-          <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
-          <p className="text-gray-400 mb-6">
-            Are you sure you want to delete this user? This action cannot be
-            undone.
-          </p>
+      {modalContent && (
+        <Modal onClose={() => setModalContent(null)} isOpen={true}>
+          <h2 className="text-xl font-semibold mb-4">{modalContent.title}</h2>
+          <p className="text-gray-400 mb-6">{modalContent.message}</p>
           <div className="flex justify-end gap-4">
             <button
-              onClick={() => setShowDeleteModal(false)}
+              onClick={() => setModalContent(null)}
               className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
               disabled={loading}
             >
               Cancel
             </button>
             <button
-              onClick={confirmDeleteUser}
+              onClick={modalContent.action}
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
               disabled={loading}
             >
-              {loading ? "Deleting..." : "Delete"}
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {showDeleteModal && (
-        <Modal onClose={() => setShowDeleteModal(false)} isOpen={true}>
-          <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
-          <p className="text-gray-400 mb-6">
-            Are you sure you want to delete this {deleteTarget?.type}? This
-            action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-4">
-            <button
-              onClick={() => setShowDeleteModal(false)}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-              disabled={loading}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={confirmDeleteItem}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-              disabled={loading}
-            >
-              {loading ? "Deleting..." : "Delete"}
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {showSelfDeleteModal && (
-        <Modal onClose={() => setShowSelfDeleteModal(false)} isOpen={true}>
-          <h2 className="text-xl font-semibold mb-4">Cannot Delete Yourself</h2>
-          <p className="text-gray-400 mb-6">
-            You cannot delete your own account.
-          </p>
-          <div className="flex justify-end gap-4">
-            <button
-              onClick={() => setShowSelfDeleteModal(false)}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-              disabled={loading}
-            >
-              Close
+              {loading ? "Processing..." : "Confirm"}
             </button>
           </div>
         </Modal>

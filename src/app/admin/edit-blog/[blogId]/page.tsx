@@ -32,7 +32,7 @@ const EditBlogPage: React.FC = () => {
 
     const fetchBlogDetails = async () => {
       try {
-        const response = await fetch(`/api/blogs/${blogId}`);
+        const response = await fetch(`/api/blogs/editblog?blogId=${blogId}`);
         if (!response.ok) throw new Error("Error fetching blog details");
 
         const blog = await response.json();
@@ -69,7 +69,7 @@ const EditBlogPage: React.FC = () => {
 
     try {
       const idToken = await user?.getIdToken();
-      const response = await fetch(`/api/blogs/${blogId}`, {
+      const response = await fetch(`/api/blogs/editblog?blogId=${blogId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${idToken}`,

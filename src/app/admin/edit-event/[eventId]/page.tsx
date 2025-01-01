@@ -35,11 +35,11 @@ const EditEventPage: React.FC = () => {
     // Fetch event details
     const fetchEventDetails = async () => {
       try {
-        const response = await fetch(`/api/events/${eventId}`);
+        const response = await fetch(`/api/events/editevent?eventId=${eventId}`);
         if (!response.ok) throw new Error("Error fetching event details");
 
         const event = await response.json();
-        setTitle(event.name || "");
+        setTitle(event.title || "");
         setDescription(event.description || "");
         setContent(event.content || "");
         setDate(event.date || "");
@@ -64,7 +64,7 @@ const EditEventPage: React.FC = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("name", title);
+    formData.append("title", title);
     formData.append("description", description);
     formData.append("content", content);
     formData.append("date", date);
@@ -73,7 +73,7 @@ const EditEventPage: React.FC = () => {
 
     try {
       const idToken = await user?.getIdToken();
-      const response = await fetch(`/api/events/${eventId}`, {
+      const response = await fetch(`/api/events/editevent?eventId=${eventId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${idToken}`,

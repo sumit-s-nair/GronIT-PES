@@ -1,13 +1,19 @@
 "use client";
 
 import { Footer } from "@/components/Footer";
+import Header from "@/components/Header";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 export default function About() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900 text-white font-sans">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-black to-gray-900 text-white font-sans">
+      {/* Header */}
+      <div className="bg-black">
+        <Header />
+      </div>
+
       {/* Top Section */}
       <header className="flex flex-col items-center justify-center py-16 bg-gradient-to-r from-green-500 to-blue-500 shadow-lg">
         <Image

@@ -43,17 +43,17 @@ export async function generateMetadata(
       : "/assets/logo_black.png";
 
     return {
-      title: event.name,
+      title: event.title,
       description: event.description,
       openGraph: {
-        title: event.name,
+        title: event.title,
         description: event.description,
         images: [
           {
             url: imageUrl,
             width: 800,
             height: 400,
-            alt: event.name,
+            alt: event.title,
           },
         ],
       },

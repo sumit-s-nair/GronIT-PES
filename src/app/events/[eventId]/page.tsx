@@ -4,18 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-
-interface Event {
-  _id: string;
-  name: string;
-  content: string;
-  author: string;
-  description: string;
-  registrationLink: string;
-  image: Buffer;
-  imageType: string;
-  date: Date;
-}
+import { Event } from "@/models/Event";
 
 const EventDetailsPage: React.FC = () => {
   const { eventId } = useParams();
@@ -91,12 +80,12 @@ const EventDetailsPage: React.FC = () => {
       <div className="relative w-full h-64 sm:h-96">
         <Image
           src={imageDataURL}
-          alt={event.name}
+          alt={event.title}
           fill
           className="object-cover"
         />
         <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6">
-          <h1 className="text-4xl font-bold">{event.name}</h1>
+          <h1 className="text-4xl font-bold">{event.title}</h1>
           <p className="text-gray-400 mt-2">{formattedDate}</p>
         </div>
       </div>

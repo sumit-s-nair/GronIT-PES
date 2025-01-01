@@ -11,15 +11,17 @@ import { Blog } from "@/models/Blog";
 
 const BlogsPage: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchBlogs = async () => {
     try {
       const blogsResponse = await axios.get("/api/blogs");
-
       if (blogsResponse.data) setBlogs(blogsResponse.data);
     } catch (error) {
       console.error("Error fetching blogs/events:", error);
-      alert("Failed to fetch blogs and events.");
+      alert("Failed to fetch blogs.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,22 +58,28 @@ const BlogsPage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.2 }}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {blogs.map((blog, index) => (
-            <motion.div
-              key={blog._id}
-              className="blog-card"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                duration: 1,
-                delay: index * 0.3,
-              }}
-            >
-              <BlogCard blog={blog} />
-            </motion.div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-96">
+            <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {blogs.map((blog, index) => (
+              <motion.div
+                key={blog._id}
+                className="blog-card"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  duration: 1,
+                  delay: index * 0.3,
+                }}
+              >
+                <BlogCard blog={blog} />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </motion.main>
 
       {/* Footer */}

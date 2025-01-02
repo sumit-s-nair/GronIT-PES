@@ -29,6 +29,12 @@ const EventsPage: React.FC = () => {
     fetchEvents();
   }, []);
 
+  const currentDate = new Date();
+  const upcomingEvents = events.filter(
+    (event) => new Date(event.date) >= currentDate
+  );
+  const pastEvents = events.filter((event) => new Date(event.date) < currentDate);
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-sans">
       {/* Header */}
@@ -63,22 +69,53 @@ const EventsPage: React.FC = () => {
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {events.map((event, index) => (
-              <motion.div
-                key={event._id}
-                className="event-card"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{
-                  duration: 1,
-                  delay: index * 0.3,
-                }}
-              >
-                <EventCard event={event} />
-              </motion.div>
-            ))}
-          </div>
+          <>
+            {/* Upcoming Events */}
+            {upcomingEvents.length > 0 && (
+              <section className="mb-16">
+                <h2 className="text-3xl font-bold text-white mb-8">Upcoming Events</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                  {upcomingEvents.map((event, index) => (
+                    <motion.div
+                      key={event._id}
+                      className="event-card"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        duration: 1,
+                        delay: index * 0.3,
+                      }}
+                    >
+                      <EventCard event={event} />
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Past Events */}
+            {pastEvents.length > 0 && (
+              <section>
+                <h2 className="text-3xl font-bold text-white mb-8">Past Events</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                  {pastEvents.map((event, index) => (
+                    <motion.div
+                      key={event._id}
+                      className="event-card"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        duration: 1,
+                        delay: index * 0.3,
+                      }}
+                    >
+                      <EventCard event={event} />
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
       </motion.main>
 

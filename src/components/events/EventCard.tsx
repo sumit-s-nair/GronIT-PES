@@ -17,8 +17,8 @@ export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   });
 
   const truncatedDescription =
-    event.description.length > 100
-      ? `${event.description.slice(0, 100)}...`
+    event.description.length > 75
+      ? `${event.description.slice(0, 75)}...`
       : event.description;
 
   return (

@@ -11,8 +11,8 @@ export const BlogCard: React.FC<{ blog: Blog }> = ({ blog }) => {
     : "/assets/logo_black.png";
 
   const truncatedDescription =
-    blog.description.length > 100
-      ? `${blog.description.slice(0, 100)}...`
+    blog.description.length > 75
+      ? `${blog.description.slice(0, 75)}...`
       : blog.description;
 
   return (

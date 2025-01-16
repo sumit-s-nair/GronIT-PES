@@ -10,9 +10,10 @@ import { TeamMemberCard } from "@/components/team/TeamMemberCard";
 // Sample team member data
 const teamMembers = [
   {
-    id: 1,
+    _id: "1",
     image: "https://via.placeholder.com/150",
     name: "User1",
+    domain: "Software Engineer", // Added domain
     socialLinks: {
       twitter: "https://twitter.com/User1",
       linkedin: "https://linkedin.com/in/User1",
@@ -20,9 +21,10 @@ const teamMembers = [
     },
   },
   {
-    id: 2,
+    _id: "2",
     image: "https://via.placeholder.com/150",
     name: "Jane Smith",
+    domain: "Product Manager", // Added domain
     socialLinks: {
       twitter: "https://twitter.com/User2",
       linkedin: "https://linkedin.com/in/User2",
@@ -30,9 +32,10 @@ const teamMembers = [
     },
   },
   {
-    id: 3,
+    _id: "3",
     image: "https://via.placeholder.com/150",
     name: "Sam Wilson",
+    domain: "Designer", // Added domain
     socialLinks: {
       twitter: "https://twitter.com/User3",
       linkedin: "https://linkedin.com/in/User3",
@@ -77,7 +80,7 @@ const TeamPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {teamMembers.map((member, index) => (
             <motion.div
-              key={member.id}
+              key={member._id}
               className="team-member-card"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

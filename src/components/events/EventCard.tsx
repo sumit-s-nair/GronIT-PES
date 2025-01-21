@@ -43,7 +43,7 @@ export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
             <Link
               href={`/events/${event._id}`}
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"
+              className="px-4 py-2 border-2 border-green-500 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"
             >
               Details
             </Link>
@@ -51,7 +51,7 @@ export const EventCard: React.FC<{ event: Event }> = ({ event }) => {
               href={event.registrationLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 border-2 border-green-500 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"
+              className="px-4 py-2 border-2 border-blue-500 text-white rounded-lg hover:scale-105 transition-transform w-30 text-center"
             >
               Register
             </Link>

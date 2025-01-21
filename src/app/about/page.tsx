@@ -105,7 +105,7 @@ export default function About() {
             ].map((objective, index) => (
               <div
                 key={index}
-                className="bg-zinc-800 p-6 rounded-lg shadow-lg text-gray-300 flex flex-col items-center text-center space-y-4"
+                className="bg-gray-800 p-6 rounded-lg shadow-lg text-gray-300 flex flex-col items-center text-center space-y-4"
               >
                 {objective.icon}
                 <p className="text-lg leading-relaxed">{objective.text}</p>
@@ -115,13 +115,13 @@ export default function About() {
         </section>
 
         {/* Contact Section */}
-        <section className="text-center p-6 bg-gradient-to-r from-teal-800 to-blue-900 rounded-xl shadow-xl">
+        <section className="text-center p-6 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl shadow-xl">
           <h2 className="text-3xl font-bold text-white mb-4">Get in Touch</h2>
           <p className="text-gray-300 text-lg">
             Have questions or want to collaborate? Reach out to us at{" "}
             <Link
               href="mailto:gronit@pes.edu"
-              className="text-blue-300 hover:text-blue-500 hover:underline"
+              className="text-blue-100 hover:text-blue-300 hover:underline"
             >
               gronit@pes.edu
             </Link>

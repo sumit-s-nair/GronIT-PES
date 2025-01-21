@@ -1,7 +1,14 @@
 import { UserRecord } from "firebase-admin/auth";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { FaTrashAlt, FaEdit, FaPlus } from "react-icons/fa";
+import {
+  FaTrashAlt,
+  FaEdit,
+  FaPlus,
+  FaGithub,
+  FaInstagram,
+  FaLinkedin,
+} from "react-icons/fa";
 import { Blog } from "@/models/Blog";
 import { Event } from "@/models/Event";
 import { TeamMember } from "@/models/Member";
@@ -10,6 +17,7 @@ import Image from "next/image";
 import axios from "axios";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
+import Link from "next/link";
 
 // Types for props
 interface BlogListProps {
@@ -25,8 +33,8 @@ interface EventListProps {
 interface MemberListProps {
   members: TeamMember[];
   onDelete: (id: string, type: "member") => void;
-  onAdd: () => void;
 }
+
 // AdminList component
 const AddModal: React.FC<{
   show: boolean;
@@ -294,18 +302,90 @@ export const EventList: React.FC<EventListProps> = ({ events, onDelete }) => {
   );
 };
 
-// MemberList component
 export const MemberList: React.FC<MemberListProps> = ({
   members,
   onDelete,
-  onAdd,
 }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    domain: "",
+    image: null as File | null,
+    socialLinks: { instagram: "", linkedin: "", github: "" },
+  });
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        setUser(authUser as User);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    if (["instagram", "linkedin", "github"].includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        socialLinks: { ...prev.socialLinks, [name]: value },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = (e.target as HTMLInputElement).files;
+    if (files && files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        image: files[0],
+      }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append("name", formData.name);
+    formDataToSubmit.append("domain", formData.domain);
+    formDataToSubmit.append("image", formData.image as Blob);
+    formDataToSubmit.append(
+      "socialLinks",
+      JSON.stringify(formData.socialLinks)
+    );
+
+    try {
+      const idToken = await user?.getIdToken();
+      await axios.post("/api/teams", formDataToSubmit, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      setFormData({
+        name: "",
+        domain: "",
+        image: null,
+        socialLinks: { instagram: "", linkedin: "", github: "" },
+      });
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error adding member:", error);
+      alert("Failed to add member. Please try again.");
+    }
+  };
+
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-semibold">Members</h2>
+    <div className="container mx-auto">
+      <div className="flex items-center justify-between mt-12 mb-8">
+        <h2 className="text-2xl font-semibold text-gray-100">Team Members</h2>
         <button
-          onClick={() => onAdd()}
+          onClick={() => setShowModal(true)}
           className="bg-green-500 text-white p-2 rounded-full hover:bg-green-700"
         >
           <FaPlus />
@@ -313,31 +393,146 @@ export const MemberList: React.FC<MemberListProps> = ({
       </div>
 
       <div className="flex flex-wrap gap-4">
-        {members.map((member) => {
-          const imageDataURL = member.image
-            ? `data:${member.imageType};base64,${Buffer.from(
+        {members.map((member) => (
+          <div
+            key={member._id}
+            className="bg-zinc-800 text-gray-100 p-4 rounded-lg shadow-md flex flex-col items-center sm:w-[250px]"
+          >
+            <Image
+              src={`data:${member.imageType};base64,${Buffer.from(
                 member.image
-              ).toString("base64")}`
-            : "/assets/logo_black.png";
-          return (
-            <div
-              key={member.id}
-              className="flex flex-col items-center bg-zinc-800 p-4 rounded-lg shadow-md w-full sm:w-[200px]"
+              ).toString("base64")}`}
+              alt={member.name}
+              className="w-full h-40 object-cover rounded-lg"
+              width={800}
+              height={600}
+            />
+            <h3 className="text-lg font-bold mt-3">{member.name}</h3>
+            <p className="text-sm text-gray-400">{member.domain}</p>
+            <div className="flex gap-3 mt-2">
+              {member.socialLinks.instagram && (
+                <Link
+                  href={member.socialLinks.instagram}
+                  target="_blank"
+                  className="text-blue-400 hover:underline"
+                >
+                  <FaInstagram size={24} />
+                </Link>
+              )}
+              {member.socialLinks.linkedin && (
+                <Link
+                  href={member.socialLinks.linkedin}
+                  target="_blank"
+                  className="text-blue-400 hover:underline"
+                >
+                  <FaLinkedin size={24} />
+                </Link>
+              )}
+              {member.socialLinks.github && (
+                <Link
+                  href={member.socialLinks.github}
+                  target="_blank"
+                  className="text-blue-400 hover:underline"
+                >
+                  <FaGithub size={24} />
+                </Link>
+              )}
+            </div>
+            <button
+              onClick={() => onDelete(member._id, "member")}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
-              <Avatar imageUrl={imageDataURL} name={member.name} />
-              <p className="text-lg font-semibold mt-2 text-center">
-                {member.name}
-              </p>
-              <button
-                onClick={() => member.id && onDelete(member.id, "member")}
-                className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+              <FaTrashAlt className="mr-1" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4 text-gray-100">
+              Add Member
+            </h2>
+            <div className="space-y-4">
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded bg-gray-800 text-white"
+              />
+              <select
+                name="domain"
+                value={formData.domain}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded bg-gray-800 text-white"
               >
-                <FaTrashAlt />
+                <option value="" disabled>
+                  Select a domain
+                </option>
+                <option value="Technical (Web Dev)">Technical (Web Dev)</option>
+                <option value="Logistics">Logistics</option>
+                <option value="EVM">EVM</option>
+                <option value="Heads">Heads</option>
+                <option value="Machine Learning">Machine Learning</option>
+                <option value="Research">Research</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Operations">Operations</option>
+                <option value="Sponsorship">Sponsorship</option>
+                <option value="Design">Design</option>
+                <option value="PR and Campaigning">PR and Campaigning</option>
+              </select>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full px-4 py-2 border rounded bg-gray-800 text-white"
+              />
+              <input
+                type="text"
+                name="instagram"
+                placeholder="Instagram URL"
+                value={formData.socialLinks.instagram}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded bg-gray-800 text-white"
+              />
+              <input
+                type="text"
+                name="linkedin"
+                placeholder="LinkedIn URL"
+                value={formData.socialLinks.linkedin}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded bg-gray-800 text-white"
+              />
+              <input
+                type="text"
+                name="github"
+                placeholder="GitHub URL"
+                value={formData.socialLinks.github}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded bg-gray-800 text-white"
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              >
+                Add Member
               </button>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

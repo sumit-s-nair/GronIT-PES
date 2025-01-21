@@ -30,7 +30,7 @@ const BlogsPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans">
+    <div className="flex flex-col min-h-screen text-white font-sans">
       {/* Header */}
       <Header />
 
@@ -41,7 +41,7 @@ const BlogsPage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
+        <div className="icon bg-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
           <MdOutlineArticle size={50} />
         </div>
         <h1 className="text-4xl mt-4 text-white font-bold uppercase">Blogs</h1>

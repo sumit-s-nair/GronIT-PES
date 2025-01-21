@@ -36,16 +36,20 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans">
+    <div className="flex flex-col min-h-screen text-white font-sans">
       {/* Top Section */}
       <header className="flex flex-col items-center justify-center py-16">
-        <Image
-          src={"/assets/logo_black.png"}
-          width={100}
-          height={100}
-          alt="GronIT Logo"
-        />
-        <h1 className="text-4xl mt-4 text-white">Welcome to GronIT</h1>
+        <div className="rounded-full bg-black p-4 flex items-center justify-center mx-auto overflow-hidden">
+          <Image
+            src={"/assets/logo_black.png"}
+            width={100}
+            height={100}
+            alt="GronIT Logo"
+          />
+        </div>
+        <h1 className="text-5xl mt-4 text-white font-bold text-center">
+          Welcome to Gron<span className="text-green-400">IT</span>
+        </h1>
       </header>
 
       {/* Mid Section */}
@@ -63,7 +67,7 @@ export default function Home() {
           >
             <div className="content">
               <Link href="/about">
-                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                <div className="icon bg-gradient-to-r from-green-500 to-blue-600 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
                   <FaCode size={40} />
                 </div>
                 <h2 className="text-2xl font-bold text-center">What We Do</h2>

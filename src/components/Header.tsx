@@ -5,14 +5,65 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { MdMenu, MdClose } from "react-icons/md";
 
+const DesktopNav: React.FC = () => (
+  <nav className="hidden md:flex space-x-8 ">
+    <Link href="/events" className="text-lg hover:text-green-500 transition">
+      Events
+    </Link>
+    <Link href="/team" className="text-lg hover:text-green-500 transition">
+      Team
+    </Link>
+    <Link href="/blogs" className="text-lg hover:text-green-500 transition">
+      Blogs
+    </Link>
+    <Link href="/about" className="text-lg hover:text-green-500 transition">
+      About
+    </Link>
+  </nav>
+);
+
+const MobileNav: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-lg z-10 flex flex-col items-center justify-center">
+    <nav className="flex flex-col space-y-8 text-white text-lg">
+      <Link
+        href="/events"
+        className="hover:text-green-500 transition"
+        onClick={toggleMenu}
+      >
+        Events
+      </Link>
+      <Link
+        href="/team"
+        className="hover:text-green-500 transition"
+        onClick={toggleMenu}
+      >
+        Team
+      </Link>
+      <Link
+        href="/blogs"
+        className="hover:text-green-500 transition"
+        onClick={toggleMenu}
+      >
+        Blogs
+      </Link>
+      <Link
+        href="/about"
+        className="hover:text-green-500 transition"
+        onClick={toggleMenu}
+      >
+        About
+      </Link>
+    </nav>
+  </div>
+);
+
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Toggle the menu state on click
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="relative sticky top-0 z-50 flex justify-between items-center py-4 px-6 bg-black text-white sm:mx-12">
+    <header className="relative sticky top-0 z-50 flex justify-between items-center py-4 px-16 bg-black/70 text-white sm:mx-12 rounded-md shadow-md">
       {/* Logo and Name */}
       <Link href="/">
         <div className="flex items-center space-x-4">
@@ -27,24 +78,8 @@ const Header: React.FC = () => {
         </div>
       </Link>
 
-      {/* Navigation Links (Desktop) */}
-      <nav className="hidden md:flex space-x-8">
-        <Link
-          href="/events"
-          className="text-lg hover:text-green-500 transition"
-        >
-          Events
-        </Link>
-        <Link href="/team" className="text-lg hover:text-green-500 transition">
-          Team
-        </Link>
-        <Link href="/blogs" className="text-lg hover:text-green-500 transition">
-          Blogs
-        </Link>
-        <Link href="/about" className="text-lg hover:text-green-500 transition">
-          About
-        </Link>
-      </nav>
+      {/* Desktop Navigation */}
+      <DesktopNav />
 
       {/* Hamburger Icon */}
       <div className="md:hidden relative z-20">
@@ -58,41 +93,8 @@ const Header: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-lg z-10 flex flex-col items-center justify-center">
-          <nav className="flex flex-col space-y-8 text-white text-lg">
-            <Link
-              href="/events"
-              className="hover:text-green-500 transition"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Events
-            </Link>
-            <Link
-              href="/team"
-              className="hover:text-green-500 transition"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Team
-            </Link>
-            <Link
-              href="/blogs"
-              className="hover:text-green-500 transition"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/about"
-              className="hover:text-green-500 transition"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </Link>
-          </nav>
-        </div>
-      )}
+      {/* Mobile Navigation */}
+      {isMenuOpen && <MobileNav toggleMenu={toggleMenu} />}
     </header>
   );
 };

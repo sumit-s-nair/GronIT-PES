@@ -20,7 +20,6 @@ const Login: React.FC = () => {
       if (user) {
         router.push("/admin");
       }
-
     } catch (error) {
       console.error(error);
       setError("Failed to sign in with Google.");
@@ -38,7 +37,7 @@ const Login: React.FC = () => {
   }, [router]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+    <div className="flex flex-col items-center justify-center h-screen text-white">
       <div className="logo mb-4">
         <Image
           src="/assets/logo_black.png"

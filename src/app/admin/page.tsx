@@ -13,17 +13,20 @@ import { Footer } from "@/components/Footer";
 import { Modal } from "@/components/Modal";
 import { Blog } from "@/models/Blog";
 import { Event } from "@/models/Event";
-import { AdminList, BlogList, EventList } from "@/components/Admin";
+import { AdminList, BlogList, EventList, MemberList } from "@/components/Admin";
 import { handleSignOut } from "@/lib/Admin";
+import { TeamMember } from "@/models/Member";
 
 const AdminPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [admins, setAdmins] = useState<UserRecord[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [team, setTeam] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(false);
   const [blogLoading, setBlogLoading] = useState<boolean>(false);
+  const [teamLoading, setTeamLoading] = useState<boolean>(false);
   const [eventLoading, setEventLoading] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<{
     type: string;
@@ -72,25 +75,31 @@ const AdminPage: React.FC = () => {
   const fetchBlogsAndEvents = async () => {
     setBlogLoading(true);
     setEventLoading(true);
+    setTeamLoading(true);
     try {
       const idToken = await user?.getIdToken();
-      const [blogsResponse, eventsResponse] = await Promise.all([
+      const [blogsResponse, eventsResponse, teamResponse] = await Promise.all([
         axios.get("/api/blogs", {
           headers: { Authorization: `Bearer ${idToken}` },
         }),
         axios.get("/api/events", {
           headers: { Authorization: `Bearer ${idToken}` },
         }),
+        axios.get("/api/teams", {
+          headers: { Authorization: `Bearer ${idToken}` },
+        }),
       ]);
 
       if (blogsResponse.data) setBlogs(blogsResponse.data);
       if (eventsResponse.data) setEvents(eventsResponse.data);
+      if (teamResponse.data) setTeam(teamResponse.data);
     } catch (error) {
       console.error("Error fetching blogs/events:", error);
       alert("Failed to fetch blogs and events.");
     } finally {
       setBlogLoading(false);
       setEventLoading(false);
+      setTeamLoading(false);
     }
   };
 
@@ -141,7 +150,7 @@ const AdminPage: React.FC = () => {
     });
   };
 
-  const handleDeleteItem = (id: string, type: "blog" | "event") => {
+  const handleDeleteItem = (id: string, type: "blog" | "event" | "member") => {
     setModalContent({
       type: "delete-item",
       title: `Confirm Delete ${type}`,
@@ -150,17 +159,30 @@ const AdminPage: React.FC = () => {
         setLoading(true);
         try {
           const idToken = await user?.getIdToken();
-          const endpoint = type === "blog" ? "/api/blogs" : "/api/events";
+          let endpoint = "";
+
+          // Set the correct endpoint based on the type
+          if (type === "blog") {
+            endpoint = "/api/blogs";
+          } else if (type === "event") {
+            endpoint = "/api/events";
+          } else if (type === "member") {
+            endpoint = "/api/teams";
+          }
+
           const response = await axios.delete(endpoint, {
             headers: { Authorization: `Bearer ${idToken}` },
             data: { id },
           });
 
           if (response.status === 200) {
+            // Update the state based on the type
             if (type === "blog") {
               setBlogs((prev) => prev.filter((blog) => blog.id !== id));
-            } else {
+            } else if (type === "event") {
               setEvents((prev) => prev.filter((event) => event.id !== id));
+            } else if (type === "member") {
+              setTeam((prev) => prev.filter((member) => member.id !== id));
             }
 
             setTimeout(() => {
@@ -179,7 +201,7 @@ const AdminPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans">
+    <div className="flex flex-col min-h-screen text-white font-sans">
       <Header />
 
       <motion.div
@@ -239,6 +261,13 @@ const AdminPage: React.FC = () => {
           <p className="text-center text-gray-500">Loading Events...</p>
         ) : (
           <EventList events={events} onDelete={handleDeleteItem} />
+        )}
+
+        {/* Team Section */}
+        {teamLoading ? (
+          <p className="text-center text-gray-500">Loading Team...</p>
+        ) : (
+          <MemberList members={team} onDelete={handleDeleteItem} />
         )}
       </motion.main>
 

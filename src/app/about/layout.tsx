@@ -3,22 +3,22 @@ import "../globals.css";
 import { Background } from "@/components/Background";
 
 export const metadata: Metadata = {
-  title: "GronIT Blogs | Green Computing Club of PES",
+  title: "GronIT - Green Computing Club of PES",
   description:
-    "Dive into the latest blogs from GronIT, the Green Computing Club of PES University. Explore insights, innovations, and sustainability tips in technology.",
+    "Discover GronIT, the green computing club of PES University, where innovation meets sustainability. Join us in creating a sustainable future through technology.",
   keywords: [
     "GronIT",
     "Green Computing",
     "PES University",
-    "Tech Blogs",
-    "Sustainability Blogs",
-    "Green Technology Insights",
+    "Sustainability",
+    "Tech Club",
+    "Green Technology",
   ],
   openGraph: {
-    title: "GronIT Blogs - Green Computing Club of PES",
+    title: "GronIT - Green Computing Club of PES",
     description:
-      "Explore blogs from GronIT, where technology meets sustainability. Stay informed on the latest in green computing and sustainable innovations.",
-    url: "https://gronit-pes.vercel.app/blogs",
+      "Discover GronIT, the green computing club of PES University, where innovation meets sustainability. Join us in creating a sustainable future through technology.",
+    url: "https://gronit-pes.vercel.app/about",
     type: "website",
     images: [
       {
@@ -31,20 +31,18 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GronIT Blogs - Green Computing Club of PES",
+    title: "GronIT - Green Computing Club of PES",
     description:
-      "Stay updated with GronIT blogs featuring green computing insights, tech sustainability tips, and more from PES University.",
-    images: [
-      "/assets/logo_black.png",
-    ],
+      "Discover GronIT, the green computing club of PES University, where innovation meets sustainability.",
+    images: ["/assets/logo_black.png"],
   },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
       <body className="antialiased">

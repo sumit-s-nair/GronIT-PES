@@ -36,7 +36,7 @@ const EventsPage: React.FC = () => {
   const pastEvents = events.filter((event) => new Date(event.date) < currentDate);
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans">
+    <div className="flex flex-col min-h-screen text-white font-sans">
       {/* Header */}
       <Header />
 
@@ -47,7 +47,7 @@ const EventsPage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
+        <div className="icon bg-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
           <MdOutlineEventAvailable size={50} />
         </div>
         <h1 className="text-4xl mt-4 text-white font-bold uppercase">Events</h1>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/firebaseAdmin";
 import connectDB from "@/lib/mongoDb";
-import TeamMember from "@/models/Member"; // Import TeamMember model
+import TeamMember from "@/models/Member";
 
 connectDB();
 
@@ -37,16 +37,14 @@ export async function POST(req: Request) {
 
     const name = formData.get("name")?.toString();
     const domain = formData.get("domain")?.toString();
-    const role = formData.get("role")?.toString(); // If you have a role field for team members
     const imageFile = formData.get("image") as File | null;
-    const socialLinks = formData.get("socialLinks")?.toString(); // You could store this as a JSON string
+    const socialLinks = formData.get("socialLinks")?.toString();
     const createdAt = new Date();
 
-    if (!name || !domain || !role || !imageFile) {
+    if (!name || !domain || !imageFile) {
       return NextResponse.json(
         {
-          message:
-            "All fields (name, domain, role, image) are required",
+          message: "All fields (name, domain, role, image) are required",
         },
         { status: 400 }
       );
@@ -58,23 +56,28 @@ export async function POST(req: Request) {
     const newTeamMember = new TeamMember({
       name,
       domain,
-      role,
       image: imageBuffer,
       imageType,
-      socialLinks: JSON.parse(socialLinks || "{}"), // Assuming socialLinks is a JSON string
+      socialLinks: JSON.parse(socialLinks || "{}"),
       createdAt,
     });
 
     await newTeamMember.save();
 
     return NextResponse.json(
-      { message: "Team member created successfully", teamMember: newTeamMember },
+      {
+        message: "Team member created successfully",
+        teamMember: newTeamMember,
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error creating team member:", error);
     return NextResponse.json(
-      { message: "Failed to create team member", error: (error as Error).message },
+      {
+        message: "Failed to create team member",
+        error: (error as Error).message,
+      },
       { status: 500 }
     );
   }
@@ -100,11 +103,17 @@ export async function DELETE(req: Request) {
 
     const deletedTeamMember = await TeamMember.findByIdAndDelete(id);
     if (!deletedTeamMember) {
-      return NextResponse.json({ message: "Team member not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Team member not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(
-      { message: "Team member deleted successfully", teamMember: deletedTeamMember },
+      {
+        message: "Team member deleted successfully",
+        teamMember: deletedTeamMember,
+      },
       { status: 200 }
     );
   } catch (error) {

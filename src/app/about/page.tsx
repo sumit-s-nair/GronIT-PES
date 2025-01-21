@@ -5,57 +5,65 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import {
+  FaBolt,
+  FaRecycle,
+  FaHandshake,
+  FaUsers,
+  FaCloud,
+} from "react-icons/fa";
+import { FaEarthAmericas } from "react-icons/fa6";
 
 export default function About() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-black to-gray-900 text-white font-sans">
+    <div className="flex flex-col min-h-screen text-white font-sans">
       {/* Header */}
-      <div className="bg-black">
-        <Header />
-      </div>
+      <Header />
 
       {/* Top Section */}
-      <header className="flex flex-col items-center justify-center py-16 bg-gradient-to-r from-green-500 to-blue-500 shadow-lg">
-        <Image
-          src={"/assets/logo_black.png"}
-          width={120}
-          height={120}
-          alt="GronIT Logo"
-          className="rounded-full shadow-2xl border-4 border-white"
-        />
-        <h1 className="text-6xl mt-6 font-extrabold text-white drop-shadow-xl tracking-wide">
-          About GronIT
-        </h1>
-      </header>
+      <section className="px-6 sm:px-12 py-12 md:py-20 max-w-7xl mx-auto text-center">
+        <div className="text-4xl md:text-6xl font-extrabold tracking-wide">
+          <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
+            GronIT
+          </h1>
+        </div>
+        <p className="text-gray-300 mt-6 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+          Promoting sustainable practices in technology and fostering
+          environmental consciousness within the PES University community.
+        </p>
+      </section>
 
       {/* Main Content */}
-      <main className="flex-1 mx-auto p-6 sm:p-12 max-w-[85%] sm:max-w-[70%] lg:max-w-[60%]">
-        {/* Mission Section */}
-        <section className="mb-12">
-          <h2 className="text-4xl font-bold text-center mb-6 text-green-400 underline decoration-dotted decoration-green-500">
-            About Us
-          </h2>
-          <p className="text-gray-300 text-lg text-center leading-relaxed hover:scale-105 transition-transform">
-            GronIT is the Green Computing Club established under the Department
-            of Computer Science and Engineering at PES University, RR Campus.
-            The club is dedicated to promoting sustainable practices in
-            technology and fostering environmental consciousness within the
-            university community. Through its activities, GronIT aims to raise
-            awareness about environmental issues related to computing, advocate
-            for energy-efficient technologies, and encourage the proper disposal
-            and recycling of electronic devices to minimize waste. The club also
-            collaborates with industry partners to explore innovative solutions
-            for sustainable computing while engaging students and the community
-            through workshops, events, and outreach programs.
-          </p>
+      <main className="flex-1 mx-auto p-6 sm:p-12 max-w-5xl space-y-20">
+        {/* About Section */}
+        <section className="flex flex-col sm:flex-row items-center gap-12">
+          <div className="sm:w-1/2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-green-400 mb-4">
+              About Us
+            </h2>
+            <p className="text-gray-300 text-lg leading-relaxed">
+              GronIT is the Green Computing Club established under the
+              Department of Computer Science and Engineering at PES University,
+              RR Campus. The club is dedicated to promoting sustainable
+              practices in technology and fostering environmental consciousness
+              within the university community.
+            </p>
+          </div>
+          <Image
+            src="/assets/logo_black.png"
+            alt="About GronIT"
+            width={500}
+            height={300}
+            className="rounded-lg shadow-md object-cover sm:w-1/2"
+          />
         </section>
 
         {/* Vision Section */}
-        <section className="mb-12">
-          <h2 className="text-4xl font-bold text-center mb-6 text-blue-400 underline decoration-dotted decoration-blue-500">
+        <section className="text-center space-y-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-blue-400">
             Our Vision
           </h2>
-          <p className="text-gray-300 text-lg text-center leading-relaxed hover:scale-105 transition-transform">
+          <p className="text-gray-300 text-lg leading-relaxed max-w-3xl mx-auto">
             GronIT aligns its initiatives with PES University’s values of
             stewardship and innovation, empowering students to reduce the
             environmental impact of technology and take meaningful steps toward
@@ -63,36 +71,61 @@ export default function About() {
           </p>
         </section>
 
-        {/* Team Section */}
-        <section className="mb-12">
-          <h2 className="text-4xl font-bold text-center mb-6 text-green-400 underline decoration-dotted decoration-green-500">
+        {/* Objectives Section */}
+        <section>
+          <h2 className="text-3xl sm:text-4xl font-bold text-green-400 text-center mb-12">
             Our Objectives
           </h2>
-          <p className="text-gray-300 text-lg text-center leading-relaxed hover:scale-105 transition-transform">
-            Raise awareness about environmental issues in computing. Promote
-            energy efficiency and adoption of energy-saving technologies.
-            Advocate for proper disposal and recycling of electronic devices.
-            Collaborate with industry partners for sustainable computing
-            solutions. Engage the community through workshops, events, and
-            educational campaigns. Promote sustainable computing practices like
-            virtualization, cloud computing, and resource optimization.
-          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <FaEarthAmericas className="text-green-400 text-4xl" />,
+                text: "Raise awareness about environmental issues in computing.",
+              },
+              {
+                icon: <FaBolt className="text-green-400 text-4xl" />,
+                text: "Promote energy efficiency and adoption of energy-saving technologies.",
+              },
+              {
+                icon: <FaRecycle className="text-green-400 text-4xl" />,
+                text: "Advocate for proper disposal and recycling of electronic devices.",
+              },
+              {
+                icon: <FaHandshake className="text-green-400 text-4xl" />,
+                text: "Collaborate with industry partners for sustainable computing solutions.",
+              },
+              {
+                icon: <FaUsers className="text-green-400 text-4xl" />,
+                text: "Engage the community through workshops, events, and educational campaigns.",
+              },
+              {
+                icon: <FaCloud className="text-green-400 text-4xl" />,
+                text: "Promote sustainable computing practices like virtualization, cloud computing, and resource optimization.",
+              },
+            ].map((objective, index) => (
+              <div
+                key={index}
+                className="bg-zinc-800 p-6 rounded-lg shadow-lg text-gray-300 flex flex-col items-center text-center space-y-4"
+              >
+                {objective.icon}
+                <p className="text-lg leading-relaxed">{objective.text}</p>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Contact Section */}
-        <section>
-          <h2 className="text-4xl font-bold text-center mb-6 text-blue-400 underline decoration-dotted decoration-blue-500">
-            Get in Touch
-          </h2>
-          <p className="text-gray-300 text-lg text-center leading-relaxed hover:scale-105 transition-transform">
-            Have questions or want to collaborate? Reach out to us at
+        <section className="text-center p-6 bg-gradient-to-r from-teal-800 to-blue-900 rounded-xl shadow-xl">
+          <h2 className="text-3xl font-bold text-white mb-4">Get in Touch</h2>
+          <p className="text-gray-300 text-lg">
+            Have questions or want to collaborate? Reach out to us at{" "}
             <Link
               href="mailto:gronit@pes.edu"
-              className="text-blue-300 hover:text-blue-500 hover:underline mx-1"
+              className="text-blue-300 hover:text-blue-500 hover:underline"
             >
               gronit@pes.edu
             </Link>
-            . We&apos;d love to hear from you!
+            .
           </p>
         </section>
       </main>

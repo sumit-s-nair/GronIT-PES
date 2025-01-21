@@ -1,52 +1,56 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaUsers } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { TeamMemberCard } from "@/components/team/TeamMemberCard";
-
-// Sample team member data
-const teamMembers = [
-  {
-    _id: "1",
-    image: "https://via.placeholder.com/150",
-    name: "User1",
-    domain: "Software Engineer", // Added domain
-    socialLinks: {
-      twitter: "https://twitter.com/User1",
-      linkedin: "https://linkedin.com/in/User1",
-      github: "https://github.com/User1",
-    },
-  },
-  {
-    _id: "2",
-    image: "https://via.placeholder.com/150",
-    name: "Jane Smith",
-    domain: "Product Manager", // Added domain
-    socialLinks: {
-      twitter: "https://twitter.com/User2",
-      linkedin: "https://linkedin.com/in/User2",
-      github: "https://github.com/User2",
-    },
-  },
-  {
-    _id: "3",
-    image: "https://via.placeholder.com/150",
-    name: "Sam Wilson",
-    domain: "Designer", // Added domain
-    socialLinks: {
-      twitter: "https://twitter.com/User3",
-      linkedin: "https://linkedin.com/in/User3",
-      github: "https://github.com/User3",
-    },
-  },
-];
+import { TeamMember } from "@/models/Member";
 
 const TeamPage: React.FC = () => {
+  const [teamData, setTeamData] = useState<{ [key: string]: TeamMember[] }>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch team members from the API
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await fetch("/api/teams");
+
+        // Check for non-OK responses
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.statusText}`);
+        }
+
+        const data: TeamMember[] = await response.json();
+
+        // Group members by domain
+        const grouped = data.reduce(
+          (acc: { [key: string]: TeamMember[] }, member: TeamMember) => {
+            if (!acc[member.domain]) acc[member.domain] = [];
+            acc[member.domain].push(member);
+            return acc;
+          },
+          {}
+        );
+
+        setTeamData(grouped);
+        setLoading(false);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
+        setLoading(false);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
+
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans">
+    <div className="flex flex-col min-h-screen text-white font-sans">
       {/* Header */}
       <Header />
 
@@ -57,8 +61,7 @@ const TeamPage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {/* Icon rendering */}
-        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
+        <div className="bg-blue-500 rounded-full p-6 h-20 w-20 flex items-center justify-center">
           <FaUsers size={50} color="white" />
         </div>
         <h1 className="text-4xl mt-4 text-white font-bold uppercase">
@@ -70,32 +73,46 @@ const TeamPage: React.FC = () => {
         </p>
       </motion.div>
 
-      {/* Team Member Cards Section */}
+      {/* Team Members Section */}
       <motion.main
         className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.2 }}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {teamMembers.map((member, index) => (
-            <motion.div
-              key={member._id}
-              className="team-member-card"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                duration: 1,
-                delay: index * 0.3,
-              }}
-            >
-              <TeamMemberCard member={member} />
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center h-96">
+            <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+          </div>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : Object.keys(teamData).length === 0 ? (
+          <p className="text-center text-gray-400">No team members found.</p>
+        ) : (
+          Object.entries(teamData).map(([domain, members]) => (
+            <section key={domain} className="mb-12">
+              <h2 className="text-2xl font-semibold text-white mb-6">
+                {domain}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+                {members.map((member) => (
+                  <motion.div
+                    key={member._id}
+                    className="team-member-card"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                  >
+                    <TeamMemberCard member={member} />
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          ))
+        )}
       </motion.main>
 
-      {/* Footer Section */}
+      {/* Footer */}
       <Footer />
     </div>
   );

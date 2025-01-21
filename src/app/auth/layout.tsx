@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
+import { Background } from "@/components/Background";
 
 export const metadata: Metadata = {
   title: "Login GronIT",
@@ -13,8 +14,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        {children}
+      <body className={` antialiased`}>
+        <Background
+          style={{ zIndex: "-1", position: "fixed" }}
+          mask="cursor"
+          dots={{
+            display: true,
+            opacity: 0.4,
+            size: "20",
+          }}
+          gradient={{
+            display: true,
+            opacity: 0.4,
+          }}
+        />
+
+        {/* Content */}
+        <div style={{ position: "relative", zIndex: "1" }}>{children}</div>
       </body>
     </html>
   );

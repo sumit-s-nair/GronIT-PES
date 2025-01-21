@@ -115,7 +115,7 @@ export default function About() {
         </section>
 
         {/* Contact Section */}
-        <section className="text-center p-6 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl shadow-xl">
+        <section className="text-center p-6 bg-sky-800 rounded-xl shadow-xl">
           <h2 className="text-3xl font-bold text-white mb-4">Get in Touch</h2>
           <p className="text-gray-300 text-lg">
             Have questions or want to collaborate? Reach out to us at{" "}

@@ -67,13 +67,15 @@ const Header: React.FC = () => {
       {/* Logo and Name */}
       <Link href="/">
         <div className="flex items-center space-x-4">
-          <Image
-            src="/assets/logo_black.png"
-            alt="Logo"
-            className="h-12 w-12"
-            height={240}
-            width={240}
-          />
+          <div className="rounded-full bg-black p-1 overflow-hidden">
+            <Image
+              src="/assets/logo_black.png"
+              alt="Logo"
+              className="h-12 w-12"
+              height={240}
+              width={240}
+            />
+          </div>
           <h1 className="text-2xl font-bold">GronIT</h1>
         </div>
       </Link>

@@ -56,7 +56,7 @@ export default function Home() {
       <main className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%] sm:max-w-[75%] lg:max-w-[60%]">
         {/* Modules */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
-          {/* Home Module */}
+          {/* About Module */}
           <motion.div
             className={`module relative bg-black ${
               isMobile ? "col-span-1" : isTablet ? "col-span-2" : "col-span-2"
@@ -67,7 +67,7 @@ export default function Home() {
           >
             <div className="content">
               <Link href="/about">
-                <div className="icon bg-gradient-to-r from-green-500 to-blue-600 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                <div className="icon">
                   <FaCode size={40} />
                 </div>
                 <h2 className="text-2xl font-bold text-center">What We Do</h2>
@@ -90,7 +90,7 @@ export default function Home() {
           >
             <div className="content">
               <Link href="/team" passHref>
-                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                <div className="icon">
                   <FaUsers size={40} />
                 </div>
                 <h2 className="text-2xl font-bold">Our Team</h2>
@@ -103,7 +103,6 @@ export default function Home() {
           </motion.div>
 
           {/* Event Module */}
-
           <motion.div
             className={`module relative bg-black border rounded-xl border-gradient-to-r from-green-400 to-blue-500 p-6 hover:shadow-green-400/50 transition-all ${
               isMobile ? "col-span-1" : "col-span-1"
@@ -114,7 +113,7 @@ export default function Home() {
           >
             <div className="content">
               <Link href="/events">
-                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                <div className="icon">
                   <MdOutlineEventAvailable size={50} />
                 </div>
                 <h2 className="text-2xl font-bold">Events</h2>
@@ -137,7 +136,7 @@ export default function Home() {
           >
             <div className="content">
               <Link href="/blogs">
-                <div className="icon bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-4 h-20 w-20 flex items-center justify-center mx-auto">
+                <div className="icon">
                   <BsLayoutTextWindowReverse size={40} />
                 </div>
                 <h2 className="text-2xl font-bold text-center">Blogs</h2>

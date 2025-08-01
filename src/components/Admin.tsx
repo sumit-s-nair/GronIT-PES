@@ -394,33 +394,45 @@ export const MemberList: React.FC<MemberListProps> = ({
             <h3 className="text-lg font-bold mt-3">{member.name}</h3>
             <p className="text-sm text-gray-400">{member.domain}</p>
             <div className="flex gap-3 mt-2">
-              {member.socialLinks?.instagram && (
-                <Link
-                  href={member.socialLinks.instagram}
-                  target="_blank"
-                  className="text-blue-400 hover:underline"
-                >
-                  <FaInstagram size={24} />
-                </Link>
-              )}
-              {member.socialLinks?.linkedin && (
-                <Link
-                  href={member.socialLinks.linkedin}
-                  target="_blank"
-                  className="text-blue-400 hover:underline"
-                >
-                  <FaLinkedin size={24} />
-                </Link>
-              )}
-              {member.socialLinks?.github && (
-                <Link
-                  href={member.socialLinks.github}
-                  target="_blank"
-                  className="text-blue-400 hover:underline"
-                >
-                  <FaGithub size={24} />
-                </Link>
-              )}
+              {(() => {
+                const socialLinks = member.socialLinks as {
+                  instagram?: string;
+                  linkedin?: string;
+                  github?: string;
+                } | null;
+                
+                return (
+                  <>
+                    {socialLinks?.instagram && (
+                      <Link
+                        href={socialLinks.instagram}
+                        target="_blank"
+                        className="text-blue-400 hover:underline"
+                      >
+                        <FaInstagram size={24} />
+                      </Link>
+                    )}
+                    {socialLinks?.linkedin && (
+                      <Link
+                        href={socialLinks.linkedin}
+                        target="_blank"
+                        className="text-blue-400 hover:underline"
+                      >
+                        <FaLinkedin size={24} />
+                      </Link>
+                    )}
+                    {socialLinks?.github && (
+                      <Link
+                        href={socialLinks.github}
+                        target="_blank"
+                        className="text-blue-400 hover:underline"
+                      >
+                        <FaGithub size={24} />
+                      </Link>
+                    )}
+                  </>
+                );
+              })()}
             </div>
             <button
               onClick={() => onDelete(member.id, "member")}

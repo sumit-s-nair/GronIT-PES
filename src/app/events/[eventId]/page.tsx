@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Event, EventRegistrationStatus } from "@/types";
-import { getEventRegistrationStatus, formatEventDate } from "@/utils/eventUtils";
+import { formatEventDate } from "@/utils/eventUtils";
 
 const EventDetailsPage: React.FC = () => {
   const { eventId } = useParams();
   const [event, setEvent] = useState<Event | null>(null);
-  const [registrationStatus, setRegistrationStatus] = useState<EventRegistrationStatus | null>(null);
+  const [registrationStatus, setRegistrationStatus] =
+    useState<EventRegistrationStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
@@ -89,51 +91,91 @@ const EventDetailsPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-sans">
+    <motion.div
+      className="flex flex-col min-h-screen bg-black text-white font-sans"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       {/* Event Header */}
-      <div className="relative w-full h-64 sm:h-96">
+      <motion.div
+        className="relative w-full h-64 sm:h-96 flex items-center justify-center"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
         <Image
           src={event.imageUrl || "/assets/logo_black.png"}
           alt={event.title}
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
+          priority
+          sizes="100vw"
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
         />
-        <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6">
-          <h1 className="text-4xl font-bold">{event.title}</h1>
-          <p className="text-gray-400 mt-2">{formatEventDate(event.date)}</p>
-          <div className="flex items-center gap-4 mt-2">
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              event.eventType === 'ONLINE' ? 'bg-blue-600 text-blue-100' :
-              event.eventType === 'OFFLINE' ? 'bg-green-600 text-green-100' :
-              'bg-purple-600 text-purple-100'
-            }`}>
+        <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6 rounded-b-lg">
+          <h1 className="text-4xl font-bold mb-2">{event.title}</h1>
+          <p className="text-gray-400 mb-2">{formatEventDate(event.date)}</p>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold shadow ${
+                event.eventType === "ONLINE"
+                  ? "bg-blue-700 text-blue-100 border border-blue-300"
+                  : event.eventType === "OFFLINE"
+                  ? "bg-green-700 text-green-100 border border-green-300"
+                  : "bg-purple-700 text-purple-100 border border-purple-300"
+              }`}
+            >
               {event.eventType}
             </span>
             {event.location && (
-              <span className="text-gray-300 text-sm">📍 {event.location}</span>
+              <span className="px-3 py-1 rounded-full text-sm bg-gray-800 text-gray-200 border border-gray-600 font-medium flex items-center gap-1">
+                {event.location}
+              </span>
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Registration Status Banner */}
-      {registrationStatus && (
-        <div className={`text-center py-4 px-6 ${
-          registrationStatus.canRegister ? 
-            (registrationStatus.daysUntilEnd && registrationStatus.daysUntilEnd <= 3 ? 'bg-orange-600' : 'bg-green-600') : 
-            'bg-red-600'
-        }`}>
-          <p className="text-white font-medium">{registrationStatus.message}</p>
-          {event.maxParticipants && event.currentParticipants !== undefined && (
-            <p className="text-gray-200 text-sm mt-1">
-              {event.currentParticipants} / {event.maxParticipants} participants registered
+      <AnimatePresence>
+        {registrationStatus && (
+          <motion.div
+            className={`text-center py-4 px-6 rounded-lg mx-auto my-6 max-w-xl shadow-lg ${
+              registrationStatus.canRegister
+                ? registrationStatus.daysUntilEnd &&
+                  registrationStatus.daysUntilEnd <= 3
+                  ? "bg-orange-600"
+                  : "bg-green-600"
+                : "bg-red-600"
+            }`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-white font-medium text-lg">
+              {registrationStatus.message}
             </p>
-          )}
-        </div>
-      )}
+            {event.maxParticipants &&
+              event.currentParticipants !== undefined && (
+                <p className="text-gray-200 text-sm mt-1">
+                  {event.currentParticipants} / {event.maxParticipants}{" "}
+                  participants registered
+                </p>
+              )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Event Content */}
-      <div className="flex-1 mx-auto p-6 sm:p-16 max-w-[90%]">
+      <motion.div
+        className="flex-1 mx-auto p-6 sm:p-16 max-w-[900px] w-full"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mb-4">Event Description</h2>
           <p className="text-gray-300 leading-relaxed">{event.description}</p>
@@ -141,28 +183,51 @@ const EventDetailsPage: React.FC = () => {
 
         {/* Event Details */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+          <div className="bg-zinc-900 rounded-lg p-6 shadow-md">
             <h3 className="text-xl font-semibold mb-2">Event Details</h3>
             <ul className="space-y-2 text-gray-300">
-              <li><span className="font-medium">Date:</span> {formatEventDate(event.date)}</li>
-              <li><span className="font-medium">Type:</span> {event.eventType}</li>
-              {event.location && <li><span className="font-medium">Location:</span> {event.location}</li>}
-              <li><span className="font-medium">Organizer:</span> {event.author}</li>
+              <li>
+                <span className="font-medium">Date:</span>{" "}
+                {formatEventDate(event.date)}
+              </li>
+              <li>
+                <span className="font-medium">Type:</span> {event.eventType}
+              </li>
+              {event.location && (
+                <li>
+                  <span className="font-medium">Location:</span>{" "}
+                  {event.location}
+                </li>
+              )}
+              <li>
+                <span className="font-medium">Organizer:</span> {event.author}
+              </li>
             </ul>
           </div>
 
-          {(event.registrationStartDate || event.registrationEndDate || event.maxParticipants) && (
-            <div>
+          {(event.registrationStartDate ||
+            event.registrationEndDate ||
+            event.maxParticipants) && (
+            <div className="bg-zinc-900 rounded-lg p-6 shadow-md">
               <h3 className="text-xl font-semibold mb-2">Registration Info</h3>
               <ul className="space-y-2 text-gray-300">
                 {event.registrationStartDate && (
-                  <li><span className="font-medium">Registration Opens:</span> {formatEventDate(event.registrationStartDate)}</li>
+                  <li>
+                    <span className="font-medium">Registration Opens:</span>{" "}
+                    {formatEventDate(event.registrationStartDate)}
+                  </li>
                 )}
                 {event.registrationEndDate && (
-                  <li><span className="font-medium">Registration Closes:</span> {formatEventDate(event.registrationEndDate)}</li>
+                  <li>
+                    <span className="font-medium">Registration Closes:</span>{" "}
+                    {formatEventDate(event.registrationEndDate)}
+                  </li>
                 )}
                 {event.maxParticipants && (
-                  <li><span className="font-medium">Max Participants:</span> {event.maxParticipants}</li>
+                  <li>
+                    <span className="font-medium">Max Participants:</span>{" "}
+                    {event.maxParticipants}
+                  </li>
                 )}
               </ul>
             </div>
@@ -177,7 +242,7 @@ const EventDetailsPage: React.FC = () => {
               {event.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm"
+                  className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm border border-gray-500 font-medium shadow"
                 >
                   {tag}
                 </span>
@@ -197,10 +262,15 @@ const EventDetailsPage: React.FC = () => {
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col justify-center p-6 mx-auto gap-4 w-full max-w-md">
+      <motion.div
+        className="flex flex-col justify-center p-6 mx-auto gap-4 w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         {getRegistrationButton()}
         <Link
           href="/events"
@@ -208,8 +278,8 @@ const EventDetailsPage: React.FC = () => {
         >
           Back to Events
         </Link>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

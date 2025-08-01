@@ -113,7 +113,7 @@ export async function PATCH(req: NextRequest) {
         registrationEndDate = new Date(registrationEndDateString);
         if (isNaN(registrationEndDate.getTime())) throw new Error("Invalid registration end date");
       }
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { message: "Invalid date format" },
         { status: 400 }

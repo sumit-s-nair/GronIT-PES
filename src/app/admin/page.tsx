@@ -241,6 +241,34 @@ const AdminPage: React.FC = () => {
         >
           <FaSignOutAlt /> Log Out
         </button>
+
+        {/* Quick Navigation */}
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
+          <motion.button
+            onClick={() => router.push('/admin/create-blog')}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Create Blog
+          </motion.button>
+          <motion.button
+            onClick={() => router.push('/admin/create-event')}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Create Event
+          </motion.button>
+          <motion.button
+            onClick={() => window.location.reload()}
+            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Refresh Data
+          </motion.button>
+        </div>
       </motion.div>
 
       <motion.main

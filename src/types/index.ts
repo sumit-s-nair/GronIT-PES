@@ -1,57 +1,18 @@
-export interface Blog {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  description: string;
-  imageUrl: string;
-  imagePublicId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Event, Blog, TeamMember, EventType } from '@prisma/client';
 
-export interface Event {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  description: string;
-  registrationLink: string;
-  imageUrl: string;
-  imagePublicId: string;
-  date: Date;
-  registrationStartDate?: Date | null;
-  registrationEndDate?: Date | null;
-  maxParticipants?: number | null;
-  currentParticipants?: number | null;
-  isRegistrationOpen: boolean;
-  location?: string | null;
-  eventType: EventType;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type { Blog, Event };
+export { EventType };
 
-export interface TeamMember {
-  id: string;
-  name: string;
-  domain: string;
-  imageUrl: string;
-  imagePublicId: string;
+export interface TeamMemberWithSocialLinks extends Omit<TeamMember, 'socialLinks'> {
   socialLinks?: {
     instagram?: string;
     linkedin?: string;
     github?: string;
   } | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-export enum EventType {
-  ONLINE = 'ONLINE',
-  OFFLINE = 'OFFLINE',
-  HYBRID = 'HYBRID'
-}
+// Keep the original TeamMember interface for backwards compatibility
+export type { TeamMember };
 
 export interface EventRegistrationStatus {
   isOpen: boolean;

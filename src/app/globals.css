@@ -42,6 +42,9 @@ body {
   background: linear-gradient(to right, #3b9f69, #3182ce); /* Gradient border */
   border: #0a0a0a solid 1px; 
   border-radius: 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .module .content {
@@ -50,12 +53,36 @@ body {
   background: rgb(3, 20, 28);
   height: 100%;
   border-radius: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 .module:hover {
   box-shadow: 0px 0px 60px rgba(56, 161, 105, 0.5); /* Green shadow */
   transform: translateY(-5px);
   transition: all 0.4s;
+}
+
+/* Text truncation utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 /* Module Icon */
@@ -67,6 +94,44 @@ body {
   background: linear-gradient(to right, #38a169, #3182ce);
   padding: 1rem;
   border-radius: 50%;
+}
+
+/* Homepage Card Styling */
+.home-card {
+  position: relative;
+  padding: 1.5px;
+  background: linear-gradient(to right, #3b9f69, #3182ce); /* Gradient border */
+  border: #0a0a0a solid 1px; 
+  border-radius: 1rem;
+  height: 100%;
+  min-height: 320px; /* Smaller height for homepage */
+  display: flex;
+  flex-direction: column;
+}
+
+.home-card .content {
+  position: relative;
+  padding: 1.5rem;
+  background: rgb(3, 20, 28);
+  height: 100%;
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.home-card:hover {
+  box-shadow: 0px 0px 40px rgba(56, 161, 105, 0.3); /* Softer green shadow */
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
+}
+
+.home-card .icon {
+  background: linear-gradient(to right, #38a169, #3182ce);
+  padding: 1rem;
+  border-radius: 50%;
+  margin-bottom: 1rem;
 }
 
 /* Module Title */

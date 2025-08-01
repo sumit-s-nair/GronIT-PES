@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BlogCard } from "@/components/blogs/BlogCard";
 import axios from "axios";
-import { Blog } from "@/models/Blog";
+import { Blog } from "@/types";
 
 const BlogsPage: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -63,10 +63,10 @@ const BlogsPage: React.FC = () => {
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 auto-rows-fr">
             {blogs.map((blog, index) => (
               <motion.div
-                key={blog._id}
+                key={blog.id}
                 className="blog-card"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

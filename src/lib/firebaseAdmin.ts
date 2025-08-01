@@ -25,3 +25,7 @@ if (!admin.apps.length) {
 }
 
 export const auth = admin.auth();
+
+export const verifyIdToken = async (token: string) => {
+  return await auth.verifyIdToken(token);
+};

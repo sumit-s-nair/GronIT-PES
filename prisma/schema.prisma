@@ -70,6 +70,18 @@ model TeamMember {
   @@map("team_members")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  uid       String   @unique // Firebase UID
+  email     String   @unique
+  name      String?
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
 enum EventType {
   ONLINE
   OFFLINE

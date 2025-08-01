@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     if (socialLinksString) {
       try {
         socialLinks = JSON.parse(socialLinksString);
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           { message: "Invalid social links format" },
           { status: 400 }

@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { EventCard } from "@/components/events/EventCard";
 import axios from "axios";
-import { Event } from "@/models/Event";
+import { Event } from "@/types";
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -74,10 +74,10 @@ const EventsPage: React.FC = () => {
             {upcomingEvents.length > 0 && (
               <section className="mb-16">
                 <h2 className="text-3xl font-bold text-white mb-8">Upcoming Events</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 auto-rows-fr">
                   {upcomingEvents.map((event, index) => (
                     <motion.div
-                      key={event._id}
+                      key={event.id}
                       className="event-card"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -97,10 +97,10 @@ const EventsPage: React.FC = () => {
             {pastEvents.length > 0 && (
               <section>
                 <h2 className="text-3xl font-bold text-white mb-8">Past Events</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 auto-rows-fr">
                   {pastEvents.map((event, index) => (
                     <motion.div
-                      key={event._id}
+                      key={event.id}
                       className="event-card"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}

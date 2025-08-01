@@ -94,14 +94,18 @@ const TeamPage: React.FC = () => {
               <h2 className="text-2xl font-semibold text-white mb-6">
                 {domain}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-                {members.map((member) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 auto-rows-fr">
+                {members.map((member, index) => (
                   <motion.div
                     key={member.id}
                     className="team-member-card"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1 }}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.6, 
+                      delay: index * 0.1,
+                      type: "spring" 
+                    }}
                   >
                     <TeamMemberCard member={member} />
                   </motion.div>

@@ -22,8 +22,13 @@ const CreateEventPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [date, setDate] = useState<string>("");
   const [registrationLink, setRegistrationLink] = useState<string>("");
+  const [registrationStartDate, setRegistrationStartDate] = useState<string>("");
+  const [registrationEndDate, setRegistrationEndDate] = useState<string>("");
+  const [maxParticipants, setMaxParticipants] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [eventType, setEventType] = useState<string>("ONLINE");
+  const [tags, setTags] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
-  const [imageType, setImageType] = useState<string>("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -55,7 +60,14 @@ const CreateEventPage: React.FC = () => {
     formData.append("description", description);
     formData.append("date", date);
     formData.append("registrationLink", registrationLink);
-    formData.append("imageType", imageType);
+    
+    // Add new fields
+    if (registrationStartDate) formData.append("registrationStartDate", registrationStartDate);
+    if (registrationEndDate) formData.append("registrationEndDate", registrationEndDate);
+    if (maxParticipants) formData.append("maxParticipants", maxParticipants);
+    if (location) formData.append("location", location);
+    formData.append("eventType", eventType);
+    if (tags) formData.append("tags", tags);
 
     try {
       const idToken = await user?.getIdToken();
@@ -82,7 +94,6 @@ const CreateEventPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
-      setImageType(file.type);
     }
   };
 
@@ -134,6 +145,7 @@ const CreateEventPage: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
+          
           <TextFieldInput
             id="description"
             label="Description"
@@ -143,27 +155,93 @@ const CreateEventPage: React.FC = () => {
             rows={4}
             required
           />
-          <DateInput
-            id="date"
-            label="Date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <DateInput
+              id="date"
+              label="Event Date & Time"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              type="datetime-local"
+            />
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Event Type</label>
+              <select
+                value={eventType}
+                onChange={(e) => setEventType(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:border-green-500 focus:ring-1 focus:ring-green-500"
+              >
+                <option value="ONLINE">Online</option>
+                <option value="OFFLINE">Offline</option>
+                <option value="HYBRID">Hybrid</option>
+              </select>
+            </div>
+          </div>
+          
+          <TextFieldInput
+            id="location"
+            label="Location (optional)"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g., Zoom Link, Auditorium, etc."
           />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <DateInput
+              id="registrationStartDate"
+              label="Registration Start Date (optional)"
+              value={registrationStartDate}
+              onChange={(e) => setRegistrationStartDate(e.target.value)}
+              type="datetime-local"
+            />
+            
+            <DateInput
+              id="registrationEndDate"
+              label="Registration End Date (optional)"
+              value={registrationEndDate}
+              onChange={(e) => setRegistrationEndDate(e.target.value)}
+              type="datetime-local"
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TextFieldInput
+              id="maxParticipants"
+              label="Max Participants (optional)"
+              value={maxParticipants}
+              onChange={(e) => setMaxParticipants(e.target.value)}
+              type="number"
+              placeholder="e.g., 100"
+            />
+            
+            <TextFieldInput
+              id="tags"
+              label="Tags (optional)"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="e.g., workshop, tech, ai (comma separated)"
+            />
+          </div>
+          
           <TextFieldInput
             id="registrationLink"
             label="Registration Link"
             value={registrationLink}
             onChange={(e) => setRegistrationLink(e.target.value)}
             required
+            placeholder="https://..."
           />
+          
           <TextFieldInput
             id="content"
-            label="Content"
+            label="Event Content/Details"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             multiline
-            rows={4}
+            rows={6}
             required
+            placeholder="Detailed description of the event, agenda, etc."
           />
 
           {/* Submit Button */}
@@ -172,7 +250,7 @@ const CreateEventPage: React.FC = () => {
             variant="contained"
             color="success"
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, py: 1.5 }}
           >
             Publish Event
           </Button>

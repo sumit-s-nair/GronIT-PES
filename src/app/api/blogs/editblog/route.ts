@@ -1,24 +1,7 @@
-import Blog from "@/models/Blog";
-import connectDB from "@/lib/mongoDb";
-import { auth } from "@/lib/firebaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
-
-connectDB();
-
-interface UpdatedBlogFields {
-  title?: string;
-  content?: string;
-  description?: string;
-  image?: Buffer;
-  imageType?: string;
-}
-
-// Disable the default body parser for multipart form data
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+import { auth } from "@/lib/firebaseAdmin";
+import { prisma } from "@/lib/prisma";
+import { uploadImage, deleteImage } from "@/lib/cloudinary";
 
 // GET method
 export async function GET(req: NextRequest) {
@@ -32,7 +15,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const blog = await Blog.findOne({ _id: blogId });
+    const blog = await prisma.blog.findUnique({
+      where: { id: blogId }
+    });
+    
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
@@ -75,45 +61,55 @@ export async function PATCH(req: NextRequest) {
     const title = formData.get("title")?.toString();
     const content = formData.get("content")?.toString();
     const description = formData.get("description")?.toString();
-    const author = decodedToken.name;
     const imageFile = formData.get("image") as File | null;
 
-    if (!title || !content || !author || !description) {
+    if (!title || !content || !description) {
       return NextResponse.json(
         {
-          message:
-            "All fields (title, content, author, description) are required",
+          message: "All fields (title, content, description) are required",
         },
         { status: 400 }
       );
     }
 
-    const updatedFields: UpdatedBlogFields = {
-      title,
-      content,
-      description,
-    };
-
-    // Handle image upload
-    if (imageFile) {
-      const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
-      const imageType = imageFile.type;
-
-      updatedFields.image = imageBuffer;
-      updatedFields.imageType = imageType;
-    }
-
-    // Update the blog post
-    const updatedBlog = await Blog.findByIdAndUpdate(blogId, updatedFields, {
-      new: true,
+    // Get existing blog
+    const existingBlog = await prisma.blog.findUnique({
+      where: { id: blogId }
     });
 
-    if (!updatedBlog) {
+    if (!existingBlog) {
       return NextResponse.json(
-        { message: "Blog not found or could not be updated" },
+        { message: "Blog not found" },
         { status: 404 }
       );
     }
+
+    let imageUrl = existingBlog.imageUrl;
+    let imagePublicId = existingBlog.imagePublicId;
+
+    // Handle image update
+    if (imageFile) {
+      // Delete old image from Cloudinary
+      await deleteImage(existingBlog.imagePublicId);
+
+      // Upload new image
+      const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+      const uploadResult = await uploadImage(imageBuffer, 'gronit/blogs');
+      imageUrl = uploadResult.secure_url;
+      imagePublicId = uploadResult.public_id;
+    }
+
+    // Update the blog post
+    const updatedBlog = await prisma.blog.update({
+      where: { id: blogId },
+      data: {
+        title,
+        content,
+        description,
+        imageUrl,
+        imagePublicId,
+      }
+    });
 
     console.log("Blog updated successfully:", updatedBlog);
 

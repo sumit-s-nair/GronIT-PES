@@ -9,9 +9,7 @@ import {
   FaInstagram,
   FaLinkedin,
 } from "react-icons/fa";
-import { Blog } from "@/models/Blog";
-import { Event } from "@/models/Event";
-import { TeamMember } from "@/models/Member";
+import { Blog, Event, TeamMember } from "@/types";
 import { Avatar } from "./Avatar";
 import Image from "next/image";
 import axios from "axios";
@@ -190,12 +188,6 @@ export const BlogList: React.FC<BlogListProps> = ({ blogs, onDelete }) => {
 
       <div className="flex flex-wrap gap-4">
         {blogs.map((blog) => {
-          const imageDataURL = blog.image
-            ? `data:${blog.imageType};base64,${Buffer.from(blog.image).toString(
-                "base64"
-              )}`
-            : "/assets/logo_black.png";
-
           const truncatedDescription =
             blog.description.length > 50
               ? `${blog.description.slice(0, 50)}...`
@@ -203,11 +195,11 @@ export const BlogList: React.FC<BlogListProps> = ({ blogs, onDelete }) => {
 
           return (
             <div
-              key={blog._id}
+              key={blog.id}
               className="flex flex-col items-center bg-zinc-800 p-4 rounded-lg shadow-md w-full sm:w-[200px]"
             >
               <Image
-                src={imageDataURL}
+                src={blog.imageUrl || "/assets/logo_black.png"}
                 alt={blog.title}
                 className="w-full h-32 object-cover rounded"
                 width={800}
@@ -217,13 +209,13 @@ export const BlogList: React.FC<BlogListProps> = ({ blogs, onDelete }) => {
               <p className="text-sm text-center mt-2">{truncatedDescription}</p>
               <div className="flex gap-2 mt-2">
                 <button
-                  onClick={() => router.push("/admin/edit-blog/" + blog._id)}
+                  onClick={() => router.push("/admin/edit-blog/" + blog.id)}
                   className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
                 >
                   <FaEdit />
                 </button>
                 <button
-                  onClick={() => onDelete(blog._id, "blog")}
+                  onClick={() => onDelete(blog.id, "blog")}
                   className="px-4 py-1 bg-red-500 text-white rounded hover:bg-red-700"
                 >
                   <FaTrashAlt />
@@ -255,12 +247,6 @@ export const EventList: React.FC<EventListProps> = ({ events, onDelete }) => {
 
       <div className="flex flex-wrap gap-4">
         {events.map((event) => {
-          const imageDataURL = event.image
-            ? `data:${event.imageType};base64,${Buffer.from(
-                event.image
-              ).toString("base64")}`
-            : "/assets/logo_black.png";
-
           const truncatedDescription =
             event.description.length > 50
               ? `${event.description.slice(0, 50)}...`
@@ -268,11 +254,11 @@ export const EventList: React.FC<EventListProps> = ({ events, onDelete }) => {
 
           return (
             <div
-              key={event._id}
+              key={event.id}
               className="flex flex-col items-center bg-zinc-800 p-4 rounded-lg shadow-md w-full sm:w-[200px]"
             >
               <Image
-                src={imageDataURL}
+                src={event.imageUrl || "/assets/logo_black.png"}
                 alt={event.title}
                 className="w-full h-32 object-cover rounded"
                 width={800}
@@ -282,13 +268,13 @@ export const EventList: React.FC<EventListProps> = ({ events, onDelete }) => {
               <p className="text-sm text-center mt-2">{truncatedDescription}</p>
               <div className="flex gap-2 mt-2">
                 <button
-                  onClick={() => router.push("/admin/edit-event/" + event._id)}
+                  onClick={() => router.push("/admin/edit-event/" + event.id)}
                   className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
                 >
                   <FaEdit />
                 </button>
                 <button
-                  onClick={() => onDelete(event._id, "event")}
+                  onClick={() => onDelete(event.id, "event")}
                   className="px-4 py-1 bg-red-500 text-white rounded hover:bg-red-700"
                 >
                   <FaTrashAlt />
@@ -395,13 +381,11 @@ export const MemberList: React.FC<MemberListProps> = ({
       <div className="flex flex-wrap gap-4">
         {members.map((member) => (
           <div
-            key={member._id}
+            key={member.id}
             className="bg-zinc-800 text-gray-100 p-4 rounded-lg shadow-md flex flex-col items-center sm:w-[250px]"
           >
             <Image
-              src={`data:${member.imageType};base64,${Buffer.from(
-                member.image
-              ).toString("base64")}`}
+              src={member.imageUrl || "/assets/logo_black.png"}
               alt={member.name}
               className="w-full h-40 object-cover rounded-lg"
               width={800}
@@ -410,7 +394,7 @@ export const MemberList: React.FC<MemberListProps> = ({
             <h3 className="text-lg font-bold mt-3">{member.name}</h3>
             <p className="text-sm text-gray-400">{member.domain}</p>
             <div className="flex gap-3 mt-2">
-              {member.socialLinks.instagram && (
+              {member.socialLinks?.instagram && (
                 <Link
                   href={member.socialLinks.instagram}
                   target="_blank"
@@ -419,7 +403,7 @@ export const MemberList: React.FC<MemberListProps> = ({
                   <FaInstagram size={24} />
                 </Link>
               )}
-              {member.socialLinks.linkedin && (
+              {member.socialLinks?.linkedin && (
                 <Link
                   href={member.socialLinks.linkedin}
                   target="_blank"
@@ -428,7 +412,7 @@ export const MemberList: React.FC<MemberListProps> = ({
                   <FaLinkedin size={24} />
                 </Link>
               )}
-              {member.socialLinks.github && (
+              {member.socialLinks?.github && (
                 <Link
                   href={member.socialLinks.github}
                   target="_blank"
@@ -439,7 +423,7 @@ export const MemberList: React.FC<MemberListProps> = ({
               )}
             </div>
             <button
-              onClick={() => onDelete(member._id, "member")}
+              onClick={() => onDelete(member.id, "member")}
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               <FaTrashAlt className="mr-1" />

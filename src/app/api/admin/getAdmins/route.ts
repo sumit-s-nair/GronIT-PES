@@ -26,11 +26,22 @@ export async function GET(req: Request) {
       nextPageToken = userRecords.pageToken;
     } while (nextPageToken);
 
+    console.log(`Successfully fetched ${users.length} users`);
     return NextResponse.json({ users }, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
+    
+    // Log more specific error details
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+    
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { 
+        message: "Internal Server Error",
+        error: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
   }

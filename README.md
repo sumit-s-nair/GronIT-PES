@@ -9,19 +9,22 @@
 
 ---
 
-## ✨ Features
 
-- 🗓️ **Event Showcase** – Discover and explore upcoming tech events.
-- 🧑‍💼 **Member List** – Meet the talented minds behind Gronit.
-- 📰 **Blog Section** – Dive into writeups and tech insights.
-- 🛠️ **Admin Panel** – Seamlessly manage events, blogs, and members (auth-protected).
-- 🔐 **Authentication** – Firebase-based secure access for admins.
+## Features
+
+Event management with registration windows, participant limits, and smart registration status.
+Member list with social media links so you can see who's on the team.
+Blog section for writeups and tech insights, with fast image delivery.
+Admin panel for managing events, blogs, and members (only for authorized users).
+Authentication is handled by Firebase, so only admins get access to the dashboard.
+Images are stored and delivered via Cloudinary for speed.
+All data is stored in a scalable PostgreSQL database using Prisma ORM.
 
 ---
 
-## 🚀 Live Site
+## Live Site
 
-👉 [https://gronit-pes.vercel.app](https://gronit-pes.vercel.app)
+[https://gronit-pes.vercel.app](https://gronit-pes.vercel.app)
 
 ---
 
@@ -31,7 +34,9 @@
 |------------|--------------------------------|
 | **Next.js** | Framework for building fast and SEO-friendly React apps |
 | **Firebase Auth** | User authentication and admin protection |
-| **MongoDB** | Database to store events, blogs, and members |
+| **PostgreSQL** | Primary database powered by Neon for scalable data storage |
+| **Prisma** | Modern database ORM for type-safe database access |
+| **Cloudinary** | Cloud-based image storage and optimization |
 | **TailwindCSS** | Modern and flexible utility-first styling |
 | **Vercel** | Deployment and hosting |
 
@@ -44,7 +49,7 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/gronit-pes.git
+git clone https://github.com/sumit-s-nair/gronit-pes.git
 cd gronit-pes
 ```
 
@@ -56,7 +61,7 @@ npm install
 
 ### 3. Set Up Environment Variables
 
-Create a `.env.local` file in the root directory and add the following variables:
+Create a `.env` file in the root directory and add the following variables:
 
 ```env
 # MongoDB
@@ -69,6 +74,19 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# Firebase Admin
+FIREBASE_PROJECT_ID=your_firebase_project_id
+FIREBASE_PRIVATE_KEY=your_private_key
+FIREBASE_CLIENT_EMAIL=your_client_email
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Postgres
+DATABASE_URL=your_postgres_connection_string
 ```
 
 ### 4. Run the Development Server
@@ -81,7 +99,7 @@ Visit [http://localhost:3000](http://localhost:3000) to view the app.
 
 ---
 
-## 🔐 Admin Access
+## Admin Access
 
 Admin routes are protected via Firebase Authentication. Only authorized users can access:
 
@@ -89,17 +107,10 @@ Admin routes are protected via Firebase Authentication. Only authorized users ca
 
 ---
 
-## 🧪 Scripts
+## Scripts
 
 - `npm run dev` – Run the app in development mode
 - `npm run build` – Build for production
 - `npm run start` – Start the production server
-
----
-
-## 🧑‍💻 Contributing
-
-We welcome contributions! Feel free to fork the repo and submit pull requests.  
-Make sure to follow the existing code style and commit guidelines.
 
 ---

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getEventRegistrationStatus } from "@/utils/eventUtils";
 
 export async function GET(req: Request) {
   // Extract eventId from query parameters
@@ -23,9 +24,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ message: "Event not found" }, { status: 404 });
     }
 
-    return NextResponse.json(event, { status: 200 });
+    // Get registration status
+    const registrationStatus = getEventRegistrationStatus(event);
+
+    return NextResponse.json({ 
+      event,
+      registrationStatus 
+    }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching event:", error);
+    console.error("Error fetching event registration status:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

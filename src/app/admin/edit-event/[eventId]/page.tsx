@@ -20,6 +20,12 @@ const EditEventPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [date, setDate] = useState<string>("");
   const [registrationLink, setRegistrationLink] = useState<string>("");
+  const [registrationStartDate, setRegistrationStartDate] = useState<string>("");
+  const [registrationEndDate, setRegistrationEndDate] = useState<string>("");
+  const [maxParticipants, setMaxParticipants] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [eventType, setEventType] = useState<string>("ONLINE");
+  const [tags, setTags] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -42,14 +48,15 @@ const EditEventPage: React.FC = () => {
         setTitle(event.title || "");
         setDescription(event.description || "");
         setContent(event.content || "");
-        setDate(event.date || "");
+        setDate(event.date ? new Date(event.date).toISOString().slice(0, 16) : "");
         setRegistrationLink(event.registrationLink || "");
-        const imageUrl = event.image
-          ? `data:${event.imageType};base64,${Buffer.from(event.image).toString(
-              "base64"
-            )}`
-          : "/assets/logo_black.png";
-        setImagePreview(imageUrl);
+        setRegistrationStartDate(event.registrationStartDate ? new Date(event.registrationStartDate).toISOString().slice(0, 16) : "");
+        setRegistrationEndDate(event.registrationEndDate ? new Date(event.registrationEndDate).toISOString().slice(0, 16) : "");
+        setMaxParticipants(event.maxParticipants?.toString() || "");
+        setLocation(event.location || "");
+        setEventType(event.eventType || "ONLINE");
+        setTags(event.tags?.join(", ") || "");
+        setImagePreview(event.imageUrl || "/assets/logo_black.png");
       } catch (error) {
         console.error("Error fetching event details:", error);
       }
@@ -69,6 +76,15 @@ const EditEventPage: React.FC = () => {
     formData.append("content", content);
     formData.append("date", date);
     formData.append("registrationLink", registrationLink);
+    
+    // Add new fields
+    if (registrationStartDate) formData.append("registrationStartDate", registrationStartDate);
+    if (registrationEndDate) formData.append("registrationEndDate", registrationEndDate);
+    if (maxParticipants) formData.append("maxParticipants", maxParticipants);
+    if (location) formData.append("location", location);
+    formData.append("eventType", eventType);
+    if (tags) formData.append("tags", tags);
+    
     if (image) formData.append("image", image);
 
     try {
@@ -137,6 +153,7 @@ const EditEventPage: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
+          
           <TextFieldInput
             id="description"
             label="Description"
@@ -146,28 +163,94 @@ const EditEventPage: React.FC = () => {
             rows={4}
             required
           />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TextFieldInput
+              id="date"
+              label="Event Date & Time"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              type="datetime-local"
+              required
+            />
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Event Type</label>
+              <select
+                value={eventType}
+                onChange={(e) => setEventType(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:border-green-500 focus:ring-1 focus:ring-green-500"
+              >
+                <option value="ONLINE">Online</option>
+                <option value="OFFLINE">Offline</option>
+                <option value="HYBRID">Hybrid</option>
+              </select>
+            </div>
+          </div>
+          
           <TextFieldInput
-            id="content"
-            label="Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            multiline
-            rows={4}
-            required
+            id="location"
+            label="Location (optional)"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g., Zoom Link, Auditorium, etc."
           />
-          <TextFieldInput
-            id="date"
-            label="Date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TextFieldInput
+              id="registrationStartDate"
+              label="Registration Start Date (optional)"
+              value={registrationStartDate}
+              onChange={(e) => setRegistrationStartDate(e.target.value)}
+              type="datetime-local"
+            />
+            
+            <TextFieldInput
+              id="registrationEndDate"
+              label="Registration End Date (optional)"
+              value={registrationEndDate}
+              onChange={(e) => setRegistrationEndDate(e.target.value)}
+              type="datetime-local"
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TextFieldInput
+              id="maxParticipants"
+              label="Max Participants (optional)"
+              value={maxParticipants}
+              onChange={(e) => setMaxParticipants(e.target.value)}
+              type="number"
+              placeholder="e.g., 100"
+            />
+            
+            <TextFieldInput
+              id="tags"
+              label="Tags (optional)"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="e.g., workshop, tech, ai (comma separated)"
+            />
+          </div>
+          
           <TextFieldInput
             id="registrationLink"
             label="Registration Link"
             value={registrationLink}
             onChange={(e) => setRegistrationLink(e.target.value)}
             required
+            placeholder="https://..."
+          />
+          
+          <TextFieldInput
+            id="content"
+            label="Event Content/Details"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            multiline
+            rows={6}
+            required
+            placeholder="Detailed description of the event, agenda, etc."
           />
 
           <Button
@@ -175,7 +258,7 @@ const EditEventPage: React.FC = () => {
             variant="contained"
             color="success"
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, py: 1.5 }}
           >
             Update Event
           </Button>

@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongoDb";
-import Blog from "@/models/Blog";
-
-// Connect to MongoDB
-connectDB();
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   // Extract blogId from query parameters
@@ -19,7 +15,9 @@ export async function GET(req: Request) {
 
   try {
     // Fetch the blog from the database
-    const blog = await Blog.findOne({ _id: blogId });
+    const blog = await prisma.blog.findUnique({
+      where: { id: blogId }
+    });
 
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });

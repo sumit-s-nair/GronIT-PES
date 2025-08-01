@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/firebaseAdmin";
-import connectDB from "@/lib/mongoDb";
-import Blog from "@/models/Blog";
-
-connectDB();
+import { prisma } from "@/lib/prisma";
+import { uploadImage, deleteImage } from "@/lib/cloudinary";
 
 export async function GET() {
   try {
-    const blogs = await Blog.find();
+    const blogs = await prisma.blog.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 
     return NextResponse.json(blogs, { status: 200 });
   } catch (error) {
@@ -52,19 +54,20 @@ export async function POST(req: Request) {
       );
     }
 
+    // Upload image to Cloudinary
     const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
-    const imageType = imageFile.type;
+    const uploadResult = await uploadImage(imageBuffer, 'gronit/blogs');
 
-    const newBlog = new Blog({
-      title,
-      content,
-      author,
-      description,
-      image: imageBuffer,
-      imageType,
+    const newBlog = await prisma.blog.create({
+      data: {
+        title,
+        content,
+        author,
+        description,
+        imageUrl: uploadResult.secure_url,
+        imagePublicId: uploadResult.public_id,
+      }
     });
-
-    await newBlog.save();
 
     return NextResponse.json(
       { message: "Blog created successfully", blog: newBlog },
@@ -97,9 +100,26 @@ export async function DELETE(req: Request) {
       );
     }
 
-    console.log(id);
+    // Get blog to delete image from Cloudinary
+    const blog = await prisma.blog.findUnique({
+      where: { id }
+    });
 
-    await Blog.findByIdAndDelete(id);
+    if (!blog) {
+      return NextResponse.json(
+        { message: "Blog not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete image from Cloudinary
+    await deleteImage(blog.imagePublicId);
+
+    // Delete blog from database
+    await prisma.blog.delete({
+      where: { id }
+    });
+
     return NextResponse.json(
       { message: "Blog deleted successfully" },
       { status: 200 }

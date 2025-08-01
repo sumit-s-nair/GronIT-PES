@@ -7,19 +7,28 @@ interface DateInputProps {
   label: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+  type?: string;
+  required?: boolean;
 }
 
-const DateInput: React.FC<DateInputProps> = ({ id, label, value, onChange }) => {
+const DateInput: React.FC<DateInputProps> = ({ 
+  id, 
+  label, 
+  value, 
+  onChange, 
+  type = "datetime-local",
+  required = false 
+}) => {
   return (
     <TextField
       id={id}
       label={label}
-      type="datetime-local"
+      type={type}
       value={value}
       onChange={onChange}
       fullWidth
       variant="outlined"
-      required
+      required={required}
       sx={{
         input: { color: green[500] },
         "& .MuiOutlinedInput-root": {

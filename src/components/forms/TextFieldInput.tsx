@@ -11,6 +11,7 @@ interface TextFieldInputProps {
   multiline?: boolean;
   rows?: number;
   required?: boolean;
+  placeholder?: string;
 }
 
 const TextFieldInput: React.FC<TextFieldInputProps> = ({
@@ -18,9 +19,11 @@ const TextFieldInput: React.FC<TextFieldInputProps> = ({
   label,
   value,
   onChange,
+  type = "text",
   multiline = false,
   rows = 1,
   required = false,
+  placeholder,
 }) => {
   return (
     <TextField
@@ -28,6 +31,8 @@ const TextFieldInput: React.FC<TextFieldInputProps> = ({
       label={label}
       value={value}
       onChange={onChange}
+      type={type}
+      placeholder={placeholder}
       fullWidth
       variant="outlined"
       required={required}

@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Blog {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  author      String
+  description String   @db.Text
+  imageUrl    String
+  imagePublicId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blogs")
+}
+
+model Event {
+  id               String    @id @default(cuid())
+  title            String
+  content          String    @db.Text
+  author           String
+  description      String    @db.Text
+  registrationLink String
+  imageUrl         String
+  imagePublicId    String
+  date             DateTime
+  registrationStartDate DateTime?
+  registrationEndDate   DateTime?
+  maxParticipants      Int?
+  currentParticipants  Int?      @default(0)
+  isRegistrationOpen   Boolean   @default(true)
+  location            String?
+  eventType           EventType @default(ONLINE)
+  tags                String[]  @default([])
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("events")
+}
+
+model TeamMember {
+  id            String   @id @default(cuid())
+  name          String
+  domain        String
+  imageUrl      String
+  imagePublicId String
+  socialLinks   Json?    // Store social links as JSON
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("team_members")
+}
+
+enum EventType {
+  ONLINE
+  OFFLINE
+  HYBRID
+}

@@ -11,11 +11,9 @@ import axios from "axios";
 import { UserRecord } from "firebase-admin/auth";
 import { Footer } from "@/components/Footer";
 import { Modal } from "@/components/Modal";
-import { Blog } from "@/models/Blog";
-import { Event } from "@/models/Event";
+import { Blog, Event, TeamMember } from "@/types";
 import { AdminList, BlogList, EventList, MemberList } from "@/components/Admin";
 import { handleSignOut } from "@/lib/Admin";
-import { TeamMember } from "@/models/Member";
 
 const AdminPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -66,7 +64,16 @@ const AdminPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching admins:", error);
-      alert("Failed to fetch admins.");
+      
+      // More detailed error logging
+      if (axios.isAxiosError(error)) {
+        console.error("Response data:", error.response?.data);
+        console.error("Response status:", error.response?.status);
+        console.error("Response headers:", error.response?.headers);
+        alert(`Failed to fetch admins: ${error.response?.data?.message || error.message}`);
+      } else {
+        alert("Failed to fetch admins: Unknown error");
+      }
     } finally {
       setAdminLoading(false);
     }

@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/firebaseAdmin";
-import connectDB from "@/lib/mongoDb";
-import Event from "@/models/Event";
-
-connectDB();
+import { prisma } from "@/lib/prisma";
+import { uploadImage, deleteImage } from "@/lib/cloudinary";
+import { EventType } from "@/types";
 
 export async function GET() {
   try {
-    const events = await Event.find();
+    const events = await prisma.event.findMany({
+      orderBy: {
+        date: 'desc'
+      }
+    });
 
     return NextResponse.json(events, { status: 200 });
   } catch (error) {
@@ -30,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     const decodedToken = await auth.verifyIdToken(token);
-    console.log("User creating blog:", decodedToken.email);
+    console.log("User creating event:", decodedToken.email);
 
     const formData = await req.formData();
 
@@ -41,6 +44,12 @@ export async function POST(req: Request) {
     const imageFile = formData.get("image") as File | null;
     const registrationLink = formData.get("registrationLink")?.toString();
     const dateString = formData.get("date")?.toString();
+    const registrationStartDateString = formData.get("registrationStartDate")?.toString();
+    const registrationEndDateString = formData.get("registrationEndDate")?.toString();
+    const maxParticipantsString = formData.get("maxParticipants")?.toString();
+    const location = formData.get("location")?.toString();
+    const eventType = formData.get("eventType")?.toString() as EventType || EventType.ONLINE;
+    const tagsString = formData.get("tags")?.toString();
 
     if (
       !title ||
@@ -54,7 +63,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           message:
-            "All fields (title, content, author, image, description, registrationLink, date) are required",
+            "Required fields: title, content, author, image, description, registrationLink, date",
         },
         { status: 400 }
       );
@@ -69,21 +78,67 @@ export async function POST(req: Request) {
       );
     }
 
+    // Parse optional dates
+    let registrationStartDate: Date | null = null;
+    let registrationEndDate: Date | null = null;
+
+    if (registrationStartDateString) {
+      registrationStartDate = new Date(registrationStartDateString);
+      if (isNaN(registrationStartDate.getTime())) {
+        return NextResponse.json(
+          { message: "Invalid registration start date format" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (registrationEndDateString) {
+      registrationEndDate = new Date(registrationEndDateString);
+      if (isNaN(registrationEndDate.getTime())) {
+        return NextResponse.json(
+          { message: "Invalid registration end date format" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Parse max participants
+    let maxParticipants: number | null = null;
+    if (maxParticipantsString) {
+      maxParticipants = parseInt(maxParticipantsString);
+      if (isNaN(maxParticipants) || maxParticipants <= 0) {
+        return NextResponse.json(
+          { message: "Invalid max participants value" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Parse tags
+    const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+    // Upload image to Cloudinary
     const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
-    const imageType = imageFile.type;
+    const uploadResult = await uploadImage(imageBuffer, 'gronit/events');
 
-    const newEvent = new Event({
-      title,
-      content,
-      author,
-      description,
-      registrationLink,
-      image: imageBuffer,
-      imageType,
-      date,
+    const newEvent = await prisma.event.create({
+      data: {
+        title,
+        content,
+        author,
+        description,
+        registrationLink,
+        imageUrl: uploadResult.secure_url,
+        imagePublicId: uploadResult.public_id,
+        date,
+        registrationStartDate,
+        registrationEndDate,
+        maxParticipants,
+        location,
+        eventType,
+        tags,
+      }
     });
-
-    await newEvent.save();
 
     return NextResponse.json(
       { message: "Event created successfully", event: newEvent },
@@ -116,10 +171,22 @@ export async function DELETE(req: Request) {
       );
     }
 
-    const deletedEvent = await Event.findByIdAndDelete(id);
-    if (!deletedEvent) {
+    // Get event to delete image from Cloudinary
+    const event = await prisma.event.findUnique({
+      where: { id }
+    });
+
+    if (!event) {
       return NextResponse.json({ message: "Event not found" }, { status: 404 });
     }
+
+    // Delete image from Cloudinary
+    await deleteImage(event.imagePublicId);
+
+    // Delete event from database
+    const deletedEvent = await prisma.event.delete({
+      where: { id }
+    });
 
     return NextResponse.json(
       { message: "Event deleted successfully", event: deletedEvent },

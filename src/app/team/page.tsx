@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { TeamMemberCard } from "@/components/team/TeamMemberCard";
-import { TeamMember } from "@/models/Member";
+import { TeamMember } from "@/types";
 
 const TeamPage: React.FC = () => {
   const [teamData, setTeamData] = useState<{ [key: string]: TeamMember[] }>({});
@@ -97,7 +97,7 @@ const TeamPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
                 {members.map((member) => (
                   <motion.div
-                    key={member._id}
+                    key={member.id}
                     className="team-member-card"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

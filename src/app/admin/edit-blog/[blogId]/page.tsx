@@ -40,13 +40,7 @@ const EditBlogPage: React.FC = () => {
         setAuthor(blog.author || "");
         setDescription(blog.description || "");
         setContent(blog.content || "");
-        setImagePreview(
-          blog.image
-            ? `data:${blog.imageType};base64,${Buffer.from(blog.image).toString(
-                "base64"
-              )}`
-            : "/assets/logo_black.png"
-        );
+        setImagePreview(blog.imageUrl || "/assets/logo_black.png");
       } catch (error) {
         console.error("Error fetching blog:", error);
       }

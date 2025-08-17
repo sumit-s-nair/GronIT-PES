@@ -36,12 +36,6 @@ export async function generateMetadata(
 
   // If the event is found, return dynamic metadata
   if (event) {
-    const imageUrl = event.image
-      ? `data:${event.imageType || "image/jpeg"};base64,${Buffer.from(
-          event.image
-        ).toString("base64")}`
-      : "/assets/logo_black.png";
-
     return {
       title: event.title,
       description: event.description,
@@ -50,7 +44,7 @@ export async function generateMetadata(
         description: event.description,
         images: [
           {
-            url: imageUrl,
+            url: event.imageUrl || "/assets/logo_black.png",
             width: 800,
             height: 400,
             alt: event.title,

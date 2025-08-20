@@ -15,6 +15,8 @@ import {
 } from "react-icons/fa";
 import { FaEarthAmericas } from "react-icons/fa6";
 
+import { Carousel } from "@/components/Carousel";
+
 export default function About() {
   return (
     <div className="flex flex-col min-h-screen text-white font-sans">
@@ -155,6 +157,21 @@ export default function About() {
             ))}
           </div>
         </motion.section>
+
+        {/* Carousel Section */}
+        <section className="my-12">
+          <Carousel
+            images={[
+              { src: "/assets/carousel/1.jpg", alt: "GronIT event 1" },
+              { src: "/assets/carousel/2.jpg", alt: "GronIT event 2" },
+              { src: "/assets/carousel/3.jpg", alt: "GronIT event 3" },
+              { src: "/assets/carousel/4.jpg", alt: "GronIT event 4" },
+              { src: "/assets/carousel/5.jpg", alt: "GronIT event 5" },
+              { src: "/assets/carousel/6.JPG", alt: "GronIT event 6" },
+              { src: "/assets/carousel/7.JPG", alt: "GronIT event 7" },
+            ]}
+          />
+        </section>
 
         {/* Contact Section */}
         <motion.section 
